@@ -1,0 +1,136 @@
+// RepoRadar — Prisma Schema
+// Source of truth: HLD Section 3 (DDL Specifications) — resolves the
+// SRS/HLD naming mismatches in favor of the HLD's literal column names
+// (email_alerts, digest_freq, github_number).
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// -----------------------------------------------------------------------
+// 3.1 users — core identity via GitHub OAuth
+// -----------------------------------------------------------------------
+model User {
+  id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  githubId  BigInt   @unique @map("github_id")
+  username  String   @unique @db.VarChar(255)
+  email     String   @unique @db.VarChar(255)
+  avatarUrl String   @map("avatar_url")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  preferences UserPreferences?
+  bookmarks   UserBookmark[]
+  digestLogs  DigestLog[]
+
+  @@map("users")
+}
+
+// -----------------------------------------------------------------------
+// 3.2 user_preferences — 1:1 extension table
+// -----------------------------------------------------------------------
+model UserPreferences {
+  userId         String  @id @map("user_id") @db.Uuid
+  preferredTags  String[] @default([]) @map("preferred_tags")
+  minSolvability Float    @default(50.0) @map("min_solvability")
+  minRepoStars   Int      @default(50) @map("min_repo_stars")
+  emailAlerts    Boolean  @default(true) @map("email_alerts")
+  digestFreq     String   @default("DAILY") @db.VarChar(20) @map("digest_freq")
+  // Allowed values per FR-5.2: 'DAILY' | 'WEEKLY' | 'NEVER'
+  // (kept as VARCHAR to match the HLD DDL exactly — see note at bottom
+  // of this file if you'd rather use a native Postgres enum instead)
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([preferredTags], type: Gin)
+  @@map("user_preferences")
+}
+
+// -----------------------------------------------------------------------
+// 3.3 repositories — tracked GitHub repos + ETag cache
+// -----------------------------------------------------------------------
+model Repository {
+  id           String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  githubRepoId BigInt   @unique @map("github_repo_id")
+  fullName     String   @unique @db.VarChar(255) @map("full_name")
+  starsCount   Int      @default(0) @map("stars_count")
+  healthScore  Float    @default(50.0) @map("health_score")
+  lastEtag     String?  @db.VarChar(255) @map("last_etag")
+  scrapedAt    DateTime @default(now()) @map("scraped_at")
+
+  issues Issue[]
+
+  @@map("repositories")
+}
+
+// -----------------------------------------------------------------------
+// 3.4 issues — core engine table
+// -----------------------------------------------------------------------
+model Issue {
+  id               String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  repositoryId     String   @map("repository_id") @db.Uuid
+  githubNumber     Int      @map("github_number")
+  title            String
+  htmlUrl          String   @map("html_url")
+  labels           String[] @default([])
+  solvabilityScore Float    @default(0.0) @map("solvability_score")
+  isOpen           Boolean  @default(true) @map("is_open")
+  commentsCount    Int      @default(0) @map("comments_count")
+  openPrsCount     Int      @default(0) @map("open_prs_count")
+  githubCreatedAt  DateTime @map("github_created_at")
+  isDirty          Boolean  @default(false) @map("is_dirty")
+
+  repository Repository     @relation(fields: [repositoryId], references: [id], onDelete: Cascade)
+  bookmarks  UserBookmark[]
+  digestLogs DigestLog[]
+
+  // Idempotency constraint — ingestion workers MUST upsert on this key
+  // (see HLD "Architectural Idempotency Constraint")
+  @@unique([repositoryId, githubNumber], name: "repo_github_number_unique")
+  @@index([labels], type: Gin)
+  @@map("issues")
+}
+
+// -----------------------------------------------------------------------
+// 3.5 user_bookmarks — workspace status per issue
+// -----------------------------------------------------------------------
+model UserBookmark {
+  id      String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId  String @map("user_id") @db.Uuid
+  issueId String @map("issue_id") @db.Uuid
+  status  String @default("SAVED") @db.VarChar(50)
+  // Allowed values: SAVED | INVESTIGATING | PR_OPEN | RESOLVED
+
+  user  User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  issue Issue @relation(fields: [issueId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, issueId])
+  @@map("user_bookmarks")
+}
+
+// -----------------------------------------------------------------------
+// 3.5 digest_logs — anti-spam audit trail (FR-5.3)
+// -----------------------------------------------------------------------
+model DigestLog {
+  id      String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId  String   @map("user_id") @db.Uuid
+  issueId String   @map("issue_id") @db.Uuid
+  sentAt  DateTime @default(now()) @map("sent_at")
+
+  user  User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  issue Issue @relation(fields: [issueId], references: [id], onDelete: Cascade)
+
+  @@index([userId, issueId, sentAt(sort: Desc)], name: "idx_digest_user_issue")
+  @@map("digest_logs")
+}
+
+// -----------------------------------------------------------------------
+// NOTE on enums: the HLD stores digest_freq and status as plain VARCHAR,
+// so that's what's modeled here. If you'd rather get compile-time safety,
+// swap those two fields for Prisma enums (DigestFrequency, BookmarkStatus)
+// — Prisma will create native Postgres enum types instead of varchar,
+// which is a valid deviation from the literal DDL but slightly stricter.
+// -----------------------------------------------------------------------
