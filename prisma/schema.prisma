@@ -5,6 +5,7 @@
 
 generator client {
   provider = "prisma-client-js"
+  previewFeatures = ["driverAdapters"]
 }
 
 datasource db {
@@ -25,8 +26,39 @@ model User {
   preferences UserPreferences?
   bookmarks   UserBookmark[]
   digestLogs  DigestLog[]
+  accounts    Account[]
 
   @@map("users")
+}
+
+// -----------------------------------------------------------------------
+// OAuth token storage — the HLD's ERD shows an "OAuth Sessions" entity
+// hanging off users, but Section 3's DDL never defines it. This closes
+// that gap. Deliberately NOT shaped to match @auth/prisma-adapter's
+// conventions (which expect plain-text tokens under fixed field names) —
+// we write to this table ourselves from the Auth.js jwt callback so we
+// can encrypt the access token before it touches the database, per
+// NFR-4 (OAuth tokens must be encrypted at rest, AES-256-GCM).
+// Session strategy is JWT (stateless), so there is no Session table.
+// -----------------------------------------------------------------------
+model Account {
+  id                String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId            String   @map("user_id") @db.Uuid
+  provider          String   @db.VarChar(50)
+  providerAccountId String   @map("provider_account_id") @db.VarChar(255)
+  accessTokenCipher String   @map("access_token_cipher") @db.Text
+  // ^ AES-256-GCM ciphertext (iv + authTag + ciphertext, base64), never
+  // plaintext. See src/lib/crypto.ts.
+  refreshTokenCipher String? @map("refresh_token_cipher") @db.Text
+  scope             String?  @db.VarChar(255)
+  expiresAt         DateTime? @map("expires_at")
+  createdAt         DateTime @default(now()) @map("created_at")
+  updatedAt         DateTime @updatedAt @map("updated_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+  @@map("accounts")
 }
 
 // -----------------------------------------------------------------------
