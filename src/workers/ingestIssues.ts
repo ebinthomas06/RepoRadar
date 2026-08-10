@@ -34,19 +34,16 @@ async function getAllDistinctTags(): Promise<string[]> {
 // details from GitHub if we've never seen it before. Returns the row's
 // internal UUID (needed for the Issue upsert's foreign key).
 async function ensureRepository(fullName: string): Promise<string | null> {
-  const existing = await prisma.repository.findUnique({
-    where: { fullName },
-  });
-  if (existing) return existing.id;
-
   const details = await fetchRepoDetails(TOKEN!, fullName);
-  if (details.fork) return null; // skip forks — not original projects
+  if (details.fork) return null;
 
   const row = await prisma.repository.upsert({
     where: { githubRepoId: BigInt(details.id) },
     update: {
       starsCount: details.stargazers_count,
       healthScore: computeHealthScore(details),
+      language: details.language?.toLowerCase() ?? null,
+      topics: details.topics ?? [],
       scrapedAt: new Date(),
     },
     create: {
@@ -54,6 +51,8 @@ async function ensureRepository(fullName: string): Promise<string | null> {
       fullName: details.full_name,
       starsCount: details.stargazers_count,
       healthScore: computeHealthScore(details),
+      language: details.language?.toLowerCase() ?? null,
+      topics: details.topics ?? [],
     },
   });
   return row.id;
@@ -90,7 +89,9 @@ async function upsertIssue(repositoryId: string, item: GithubIssueSearchItem) {
 
 async function processIssues(items: GithubIssueSearchItem[]) {
   for (const item of items) {
-    // repository_url looks like: https://api.github.com/repos/owner/name
+    if (item.pull_request) continue;
+    if (item.user?.login?.endsWith("[bot]")) continue; // skip Renovate, Dependabot, etc.
+
     const fullName = item.repository_url.replace(
       "https://api.github.com/repos/",
       ""

@@ -49,6 +49,7 @@ export interface GithubIssueSearchItem {
   labels: { name: string }[];
   repository_url: string; // e.g. https://api.github.com/repos/owner/name
   pull_request?: unknown; // present if this "issue" is actually a PR — must filter out
+   user: { login: string } | null;
 }
 
 export interface GithubRepoDetails {
@@ -58,6 +59,8 @@ export interface GithubRepoDetails {
   open_issues_count: number;
   pushed_at: string;
   fork: boolean;
+  language: string | null; 
+  topics: string[]; 
 }
 
 // Common language names GitHub recognizes as a repo's primary `language`.

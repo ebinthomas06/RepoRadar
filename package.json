@@ -8,7 +8,8 @@
     "start": "next start",
     "lint": "eslint",
     "ingest": "tsx src/workers/ingestIssues.ts",
-    "score": "tsx src/workers/scoreIssues.ts"
+    "score": "tsx src/workers/scoreIssues.ts",
+    "backfill": "tsx src/workers/backfillRepoMeta.ts"
   },
   "dependencies": {
     "@prisma/adapter-pg": "^7.9.1",

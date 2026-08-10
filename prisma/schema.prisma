@@ -90,6 +90,8 @@ model Repository {
   fullName     String   @unique @db.VarChar(255) @map("full_name")
   starsCount   Int      @default(0) @map("stars_count")
   healthScore  Float    @default(50.0) @map("health_score")
+  language     String?  @map("language")           
+  topics       String[] @default([]) @map("topics") 
   lastEtag     String?  @db.VarChar(255) @map("last_etag")
   scrapedAt    DateTime @default(now()) @map("scraped_at")
 
