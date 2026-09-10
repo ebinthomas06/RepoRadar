@@ -1,0 +1,199 @@
+name: Issue Pipeline - Ingest, Score & Digest
+
+on:
+  schedule:
+    # Daily ingestion + scoring at 2 AM UTC (adjustable)
+    - cron: "0 2 * * *"
+    # Weekly digest on Monday at 9 AM UTC (adjustable)
+    - cron: "0 9 * * 1"
+  # Allow manual trigger from Actions tab
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: "Run mode"
+        required: true
+        default: "all"
+        type: choice
+        options:
+          - all
+          - ingest-only
+          - score-only
+          - digest-daily
+          - digest-weekly
+
+jobs:
+  schedule-check:
+    name: Determine which tasks to run
+    runs-on: ubuntu-latest
+    outputs:
+      run-ingest: ${{ steps.check.outputs.run-ingest }}
+      run-score: ${{ steps.check.outputs.run-score }}
+      run-digest: ${{ steps.check.outputs.run-digest }}
+      digest-freq: ${{ steps.check.outputs.digest-freq }}
+    steps:
+      - name: Check schedule and inputs
+        id: check
+        run: |
+          # If manually triggered, use the input
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            MODE="${{ github.event.inputs.mode }}"
+            case $MODE in
+              all)
+                echo "run-ingest=true" >> $GITHUB_OUTPUT
+                echo "run-score=true" >> $GITHUB_OUTPUT
+                echo "run-digest=true" >> $GITHUB_OUTPUT
+                echo "digest-freq=both" >> $GITHUB_OUTPUT
+                ;;
+              ingest-only)
+                echo "run-ingest=true" >> $GITHUB_OUTPUT
+                echo "run-score=false" >> $GITHUB_OUTPUT
+                echo "run-digest=false" >> $GITHUB_OUTPUT
+                ;;
+              score-only)
+                echo "run-ingest=false" >> $GITHUB_OUTPUT
+                echo "run-score=true" >> $GITHUB_OUTPUT
+                echo "run-digest=false" >> $GITHUB_OUTPUT
+                ;;
+              digest-daily)
+                echo "run-ingest=false" >> $GITHUB_OUTPUT
+                echo "run-score=false" >> $GITHUB_OUTPUT
+                echo "run-digest=true" >> $GITHUB_OUTPUT
+                echo "digest-freq=daily" >> $GITHUB_OUTPUT
+                ;;
+              digest-weekly)
+                echo "run-ingest=false" >> $GITHUB_OUTPUT
+                echo "run-score=false" >> $GITHUB_OUTPUT
+                echo "run-digest=true" >> $GITHUB_OUTPUT
+                echo "digest-freq=weekly" >> $GITHUB_OUTPUT
+                ;;
+            esac
+          else
+            # Auto schedule: daily at 2 AM = ingest + score, Monday at 9 AM = digest
+            DAY_OF_WEEK=$(date -u +%u)  # 1=Monday, 7=Sunday
+            HOUR=$(date -u +%H)
+            
+            # Daily ingestion + scoring
+            if [ "$HOUR" = "02" ]; then
+              echo "run-ingest=true" >> $GITHUB_OUTPUT
+              echo "run-score=true" >> $GITHUB_OUTPUT
+              echo "run-digest=false" >> $GITHUB_OUTPUT
+            # Weekly digest (Monday 9 AM)
+            elif [ "$DAY_OF_WEEK" = "1" ] && [ "$HOUR" = "09" ]; then
+              echo "run-ingest=false" >> $GITHUB_OUTPUT
+              echo "run-score=false" >> $GITHUB_OUTPUT
+              echo "run-digest=true" >> $GITHUB_OUTPUT
+              echo "digest-freq=weekly" >> $GITHUB_OUTPUT
+            else
+              echo "run-ingest=false" >> $GITHUB_OUTPUT
+              echo "run-score=false" >> $GITHUB_OUTPUT
+              echo "run-digest=false" >> $GITHUB_OUTPUT
+            fi
+          fi
+
+  ingest-issues:
+    name: Ingest Issues from GitHub
+    runs-on: ubuntu-latest
+    needs: schedule-check
+    if: needs.schedule-check.outputs.run-ingest == 'true'
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "18"
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run ingestion worker
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: npm run ingest
+
+      - name: Notify on failure
+        if: failure()
+        run: |
+          echo "❌ Ingestion failed at $(date -u)"
+          exit 1
+
+  score-issues:
+    name: Score Issues by Solvability
+    runs-on: ubuntu-latest
+    needs: [schedule-check, ingest-issues]
+    if: needs.schedule-check.outputs.run-score == 'true'
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "18"
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run scoring worker
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: npm run score
+
+      - name: Notify on failure
+        if: failure()
+        run: |
+          echo "❌ Scoring failed at $(date -u)"
+          exit 1
+
+  send-digest:
+    name: Send Digest Emails
+    runs-on: ubuntu-latest
+    needs: schedule-check
+    if: needs.schedule-check.outputs.run-digest == 'true'
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "18"
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Send daily digest
+        if: needs.schedule-check.outputs.digest-freq == 'daily' || needs.schedule-check.outputs.digest-freq == 'both'
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }}
+        run: npm run digest:daily
+
+      - name: Send weekly digest
+        if: needs.schedule-check.outputs.digest-freq == 'weekly' || needs.schedule-check.outputs.digest-freq == 'both'
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }}
+        run: npm run digest:weekly
+
+      - name: Notify on failure
+        if: failure()
+        run: |
+          echo "❌ Digest send failed at $(date -u)"
+          exit 1
+
+  notify-success:
+    name: Pipeline Completed
+    runs-on: ubuntu-latest
+    needs: [schedule-check, ingest-issues, score-issues, send-digest]
+    if: always()
+    steps:
+      - name: Check job statuses
+        run: |
+          echo "✅ Pipeline run completed at $(date -u)"
+          echo "Ingest: ${{ needs.ingest-issues.result }}"
+          echo "Score: ${{ needs.score-issues.result }}"
+          echo "Digest: ${{ needs.send-digest.result }}"
