@@ -108,11 +108,15 @@ jobs:
         run: npm ci
 
       - name: Generate Prisma client
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          DIRECT_URL: ${{ secrets.DIRECT_URL }}
         run: npx prisma generate
 
       - name: Run ingestion worker
         env:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          DIRECT_URL: ${{ secrets.DIRECT_URL }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: npm run ingest
 
@@ -140,11 +144,15 @@ jobs:
         run: npm ci
 
       - name: Generate Prisma client
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          DIRECT_URL: ${{ secrets.DIRECT_URL }}
         run: npx prisma generate
 
       - name: Run scoring worker
         env:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          DIRECT_URL: ${{ secrets.DIRECT_URL }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: npm run score
 
@@ -172,12 +180,16 @@ jobs:
         run: npm ci
 
       - name: Generate Prisma client
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          DIRECT_URL: ${{ secrets.DIRECT_URL }}
         run: npx prisma generate
 
       - name: Send daily digest
         if: needs.schedule-check.outputs.digest-freq == 'daily' || needs.schedule-check.outputs.digest-freq == 'both'
         env:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          DIRECT_URL: ${{ secrets.DIRECT_URL }}
           RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }}
         run: npm run digest:daily
 
@@ -185,6 +197,7 @@ jobs:
         if: needs.schedule-check.outputs.digest-freq == 'weekly' || needs.schedule-check.outputs.digest-freq == 'both'
         env:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          DIRECT_URL: ${{ secrets.DIRECT_URL }}
           RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }}
         run: npm run digest:weekly
 
