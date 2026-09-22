@@ -27,9 +27,9 @@ export default function LoginPage() {
         }}
       />
 
-      {/* Login Card */}
+      {/* Login Card (Always crisp white inner box in both light and dark modes) */}
       <div className="relative w-full max-w-md">
-        <div className="rounded-3xl border border-slate-200 bg-white/90 p-8 shadow-2xl shadow-slate-300/40 backdrop-blur-xl dark:border-slate-800 dark:bg-slate-900/70 dark:shadow-black/30 sm:p-10">
+        <div className="rounded-3xl border border-slate-200/90 bg-white p-8 shadow-2xl shadow-slate-950/20 text-slate-900 sm:p-10">
           {/* Logo */}
           <div className="flex justify-center">
             <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-blue-600 to-indigo-600 font-bold text-white shadow-xl shadow-blue-500/25">
@@ -39,11 +39,11 @@ export default function LoginPage() {
 
           {/* Heading */}
           <div className="mt-6 text-center">
-            <h1 className="text-2xl font-bold tracking-tight text-slate-900 sm:text-3xl dark:text-white">
+            <h1 className="text-2xl font-bold tracking-tight text-slate-900 sm:text-3xl">
               Welcome to RepoRadar
             </h1>
 
-            <p className="mx-auto mt-2.5 max-w-sm text-xs sm:text-sm leading-6 text-slate-500 dark:text-slate-400">
+            <p className="mx-auto mt-2.5 max-w-sm text-xs sm:text-sm leading-6 text-slate-500">
               Discover open-source issues matched to your skills, track contributions, and supercharge your GitHub journey.
             </p>
           </div>
@@ -60,7 +60,7 @@ export default function LoginPage() {
           >
             <button
               type="submit"
-              className="group flex w-full items-center justify-center gap-3 rounded-2xl border border-slate-900 bg-slate-900 px-5 py-3.5 text-sm font-semibold text-white shadow-lg transition-all duration-200 hover:bg-slate-800 hover:shadow-xl active:scale-[0.99] dark:border-slate-700 dark:bg-white dark:text-slate-950 dark:hover:bg-slate-100"
+              className="group flex w-full items-center justify-center gap-3 rounded-2xl border border-slate-900 bg-slate-900 px-5 py-3.5 text-sm font-semibold text-white shadow-lg shadow-slate-900/15 transition-all duration-200 hover:bg-slate-800 hover:shadow-xl active:scale-[0.99]"
             >
               {/* GitHub SVG Icon */}
               <svg
@@ -80,42 +80,42 @@ export default function LoginPage() {
 
           {/* Divider */}
           <div className="my-6 flex items-center gap-3">
-            <div className="h-px flex-1 bg-slate-200 dark:bg-slate-800" />
-            <span className="text-[10px] font-semibold uppercase tracking-wider text-slate-400 dark:text-slate-500">
+            <div className="h-px flex-1 bg-slate-200" />
+            <span className="text-[10px] font-semibold uppercase tracking-wider text-slate-400">
               Personalized Discovery
             </span>
-            <div className="h-px flex-1 bg-slate-200 dark:bg-slate-800" />
+            <div className="h-px flex-1 bg-slate-200" />
           </div>
 
           {/* Feature Highlights with Vector Icons */}
           <div className="space-y-2.5">
             <Feature
-              icon={<Sparkles className="h-4 w-4 text-blue-600 dark:text-blue-400" />}
+              icon={<Sparkles className="h-4 w-4 text-blue-600" />}
               title="Personalized Feed"
               description="Surface open-source issues matched to your preferred topics."
             />
 
             <Feature
-              icon={<Bookmark className="h-4 w-4 text-indigo-600 dark:text-indigo-400" />}
+              icon={<Bookmark className="h-4 w-4 text-indigo-600" />}
               title="Issue Tracker"
               description="Bookmark interesting problems and manage PR status."
             />
 
             <Feature
-              icon={<Zap className="h-4 w-4 text-amber-600 dark:text-amber-400" />}
+              icon={<Zap className="h-4 w-4 text-amber-600" />}
               title="Smart Solvability Scoring"
               description="Discover high-signal beginner to advanced issues instantly."
             />
           </div>
 
           {/* Footer note */}
-          <p className="mt-6 text-center text-xs leading-5 text-slate-400 dark:text-slate-500">
+          <p className="mt-6 text-center text-xs leading-5 text-slate-500">
             Secure authentication via GitHub OAuth. No extra passwords needed.
           </p>
         </div>
 
         {/* Brand footer */}
-        <p className="mt-5 text-center text-xs font-medium text-slate-400 dark:text-slate-600">
+        <p className="mt-5 text-center text-xs font-medium text-slate-500 dark:text-slate-400">
           RepoRadar · Discover · Contribute · Build
         </p>
       </div>
@@ -133,16 +133,16 @@ function Feature({
   description: string;
 }) {
   return (
-    <div className="flex items-center gap-3 rounded-2xl border border-slate-200/80 bg-slate-50/70 px-3.5 py-3 dark:border-slate-800/70 dark:bg-slate-950/40">
-      <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-white shadow-xs dark:bg-slate-800">
+    <div className="flex items-center gap-3 rounded-2xl border border-slate-200/80 bg-slate-50/70 px-3.5 py-3">
+      <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-white shadow-xs border border-slate-100">
         {icon}
       </div>
 
       <div className="min-w-0">
-        <p className="text-xs font-semibold text-slate-800 dark:text-slate-200">
+        <p className="text-xs font-semibold text-slate-800">
           {title}
         </p>
-        <p className="mt-0.5 text-[11px] text-slate-500 dark:text-slate-400 leading-tight">
+        <p className="mt-0.5 text-[11px] text-slate-500 leading-tight">
           {description}
         </p>
       </div>
