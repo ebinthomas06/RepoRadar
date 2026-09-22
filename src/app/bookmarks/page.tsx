@@ -1,49 +1,58 @@
-
 import { auth } from "@/auth";
 import { redirect } from "next/navigation";
-import { getBookmarksForCurrentUser } from "@/actions/bookmarks";
+import { getBookmarksForCurrentUser, type BookmarkStatus } from "@/actions/bookmarks";
 import { BookmarkStatusSelect } from "@/components/BookmarkStatusSelect";
+import { DashboardLayout } from "@/components/DashboardLayout";
+import {
+  Bookmark,
+  GitBranch,
+  Star,
+  ExternalLink,
+  SearchX,
+  ArrowLeft,
+  CheckCircle2,
+  Clock,
+  GitPullRequest,
+  Zap,
+} from "lucide-react";
+import Link from "next/link";
 
 function getScoreStyle(score: number) {
   if (score >= 75) {
     return {
-      label: "High",
-      text: "text-emerald-400",
-      bg: "bg-emerald-500/10",
-      border: "border-emerald-500/20",
+      label: "High Match",
+      text: "text-emerald-700 dark:text-emerald-400",
+      bg: "bg-emerald-50 border-emerald-200 dark:bg-emerald-500/10 dark:border-emerald-500/20",
     };
   }
 
   if (score >= 50) {
     return {
-      label: "Good",
-      text: "text-blue-400",
-      bg: "bg-blue-500/10",
-      border: "border-blue-500/20",
+      label: "Good Match",
+      text: "text-blue-700 dark:text-blue-400",
+      bg: "bg-blue-50 border-blue-200 dark:bg-blue-500/10 dark:border-blue-500/20",
     };
   }
 
   if (score >= 30) {
     return {
       label: "Moderate",
-      text: "text-amber-400",
-      bg: "bg-amber-500/10",
-      border: "border-amber-500/20",
+      text: "text-amber-700 dark:text-amber-400",
+      bg: "bg-amber-50 border-amber-200 dark:bg-amber-500/10 dark:border-amber-500/20",
     };
   }
 
   return {
-    label: "Low",
-    text: "text-slate-400",
-    bg: "bg-slate-800",
-    border: "border-slate-700",
+    label: "Explore",
+    text: "text-slate-600 dark:text-slate-400",
+    bg: "bg-slate-100 border-slate-200 dark:bg-slate-800 dark:border-slate-700",
   };
 }
 
 export default async function BookmarksPage() {
   const session = await auth();
 
-  if (!session?.user) {
+  if (!session?.user?.id) {
     redirect("/login");
   }
 
@@ -62,385 +71,262 @@ export default async function BookmarksPage() {
   ).length;
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100">
-      {/* Background decoration */}
-      <div className="pointer-events-none fixed inset-0 overflow-hidden">
-        <div className="absolute -top-40 left-1/3 h-96 w-96 rounded-full bg-blue-600/10 blur-3xl" />
+    <DashboardLayout
+      user={{
+        name: session.user.name,
+        email: session.user.email,
+        image: session.user.image,
+      }}
+      bookmarkCount={bookmarks.length}
+    >
+      {/* Top Header */}
+      <header className="sticky top-0 z-20 hidden lg:block border-b border-slate-200/80 bg-white/80 backdrop-blur-xl dark:border-slate-800/80 dark:bg-slate-950/80">
+        <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-6 sm:px-8">
+          <div>
+            <p className="text-xs font-medium text-slate-500 dark:text-slate-400">Your Workspace</p>
+            <h1 className="text-lg font-bold tracking-tight text-slate-900 dark:text-slate-100">
+              Saved Bookmarks
+            </h1>
+          </div>
 
-        <div className="absolute right-0 top-1/3 h-96 w-96 rounded-full bg-purple-600/10 blur-3xl" />
-      </div>
+          <Link
+            href="/dashboard"
+            className="flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-3.5 py-2 text-xs font-semibold text-slate-700 shadow-sm transition hover:border-slate-300 hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-300 dark:hover:border-slate-600 dark:hover:bg-slate-800 dark:hover:text-white"
+          >
+            <ArrowLeft className="h-4 w-4" />
+            <span>Back to Feed</span>
+          </Link>
+        </div>
+      </header>
 
-      <div className="relative flex min-h-screen">
-        {/* Sidebar */}
-        <aside className="hidden w-64 shrink-0 border-r border-slate-800 bg-slate-950/80 backdrop-blur-xl lg:block">
-          <div className="sticky top-0 flex h-screen flex-col p-5">
-            {/* Logo */}
-            <div className="mb-10 flex items-center gap-3 px-2">
-              <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-blue-500 to-indigo-600 font-bold shadow-lg shadow-blue-500/20">
-                I
+      <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 sm:py-8 lg:px-8">
+        {/* Hero Banner */}
+        <section className="mb-6 sm:mb-8 overflow-hidden rounded-3xl border border-slate-200 bg-gradient-to-br from-white via-slate-50 to-blue-50/40 p-6 sm:p-8 shadow-sm dark:border-slate-800 dark:bg-gradient-to-br dark:from-slate-900 dark:via-slate-900/90 dark:to-slate-950">
+          <div className="relative flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between">
+            <div className="flex items-center gap-4 sm:gap-5">
+              <div className="flex h-14 w-14 sm:h-16 sm:w-16 items-center justify-center rounded-2xl bg-gradient-to-br from-blue-600 to-indigo-600 text-white shadow-lg shadow-blue-500/20">
+                <Bookmark className="h-7 w-7 fill-white/20" />
               </div>
 
               <div>
-                <p className="font-semibold tracking-tight">IssueHub</p>
-
-                <p className="text-xs text-slate-500">
-                  Developer Feed
+                <span className="text-xs font-semibold uppercase tracking-wider text-blue-600 dark:text-blue-400">
+                  Issue Tracker
+                </span>
+                <h2 className="mt-0.5 text-xl font-bold tracking-tight text-slate-900 sm:text-2xl lg:text-3xl dark:text-white">
+                  Your Saved Issues
+                </h2>
+                <p className="mt-1 text-xs sm:text-sm text-slate-500 dark:text-slate-400">
+                  Keep track of interesting open-source issues, investigate contributions, and track PRs.
                 </p>
               </div>
             </div>
 
-            {/* Navigation */}
-            <nav className="space-y-1">
-              <a
-                href="/dashboard"
-                className="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm text-slate-400 transition hover:bg-slate-800 hover:text-white"
-              >
-                <span>⌂</span>
-                Dashboard
-              </a>
-
-              <a
-                href="/bookmarks"
-                className="flex items-center gap-3 rounded-xl bg-slate-800/80 px-3 py-2.5 text-sm font-medium text-white"
-              >
-                <span>🔖</span>
-                Bookmarks
-
-                {bookmarks.length > 0 && (
-                  <span className="ml-auto rounded-full bg-blue-500/15 px-2 py-0.5 text-[10px] font-semibold text-blue-400">
-                    {bookmarks.length}
-                  </span>
-                )}
-              </a>
-
-              <a
-                href="/dashboard#settings"
-                className="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm text-slate-400 transition hover:bg-slate-800 hover:text-white"
-              >
-                <span>⚙</span>
-                Settings
-              </a>
-            </nav>
-
-            {/* User */}
-            <div className="mt-auto border-t border-slate-800 pt-4">
-              <div className="flex items-center gap-3 rounded-xl p-2">
-                {session.user.image ? (
-                  <img
-                    src={session.user.image}
-                    alt={session.user.name ?? "User"}
-                    className="h-9 w-9 rounded-full ring-2 ring-slate-700"
-                  />
-                ) : (
-                  <div className="flex h-9 w-9 items-center justify-center rounded-full bg-slate-800 text-sm font-semibold">
-                    {(session.user.name ?? "U")
-                      .charAt(0)
-                      .toUpperCase()}
-                  </div>
-                )}
-
-                <div className="min-w-0">
-                  <p className="truncate text-sm font-medium">
-                    {session.user.name ?? "Developer"}
-                  </p>
-
-                  <p className="truncate text-xs text-slate-500">
-                    {session.user.email}
-                  </p>
-                </div>
+            <div className="flex items-center gap-3 self-start sm:self-auto rounded-2xl border border-slate-200 bg-white/80 px-5 py-3.5 shadow-sm dark:border-slate-800 dark:bg-slate-950/70">
+              <div>
+                <p className="text-[10px] font-semibold uppercase tracking-wider text-slate-400 dark:text-slate-500">
+                  Total Saved
+                </p>
+                <p className="mt-0.5 text-2xl font-bold text-slate-900 dark:text-white">
+                  {bookmarks.length}
+                </p>
               </div>
             </div>
           </div>
-        </aside>
+        </section>
 
-        {/* Main content */}
-        <main className="min-w-0 flex-1">
-          {/* Top bar */}
-          <header className="sticky top-0 z-20 border-b border-slate-800/80 bg-slate-950/80 backdrop-blur-xl">
-            <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-5 sm:px-8">
-              <div>
-                <p className="text-sm text-slate-500">
-                  Your library
-                </p>
-
-                <h1 className="text-lg font-semibold tracking-tight">
-                  Bookmarks
-                </h1>
+        {/* Stats breakdown */}
+        {bookmarks.length > 0 && (
+          <section className="mb-6 sm:mb-8 grid grid-cols-1 gap-3 sm:grid-cols-3 sm:gap-4">
+            <div className="rounded-2xl border border-slate-200 bg-white p-4.5 shadow-sm dark:border-slate-800 dark:bg-slate-900/60">
+              <div className="flex items-center justify-between">
+                <p className="text-xs font-medium text-slate-500 dark:text-slate-400">Investigating</p>
+                <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-blue-50 text-blue-600 dark:bg-blue-500/10 dark:text-blue-400">
+                  <Clock className="h-4 w-4" />
+                </div>
               </div>
-
-              <a
-                href="/dashboard"
-                className="rounded-lg border border-slate-700 bg-slate-900 px-3 py-2 text-sm text-slate-300 transition hover:border-slate-600 hover:bg-slate-800 hover:text-white"
-              >
-                ← Back to feed
-              </a>
+              <p className="mt-2 text-2xl sm:text-3xl font-bold text-slate-900 dark:text-white">
+                {investigating}
+              </p>
+              <p className="mt-1 text-[11px] text-slate-400 dark:text-slate-500">
+                Currently exploring codebase
+              </p>
             </div>
-          </header>
 
-          <div className="mx-auto max-w-7xl px-5 py-8 sm:px-8">
-            {/* Hero */}
-            <section className="mb-8 overflow-hidden rounded-2xl border border-slate-800 bg-gradient-to-br from-slate-900 via-slate-900 to-slate-950">
-              <div className="relative p-6 sm:p-8">
-                <div className="absolute right-0 top-0 h-48 w-48 rounded-full bg-blue-500/10 blur-3xl" />
-
-                <div className="relative flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-                  <div>
-                    <div className="mb-3 flex h-10 w-10 items-center justify-center rounded-xl bg-blue-500/10 text-lg">
-                      🔖
-                    </div>
-
-                    <h2 className="text-2xl font-bold tracking-tight sm:text-3xl">
-                      Your saved issues
-                    </h2>
-
-                    <p className="mt-2 max-w-xl text-sm leading-6 text-slate-500">
-                      Keep track of interesting open-source issues,
-                      investigate potential contributions, and follow
-                      your progress.
-                    </p>
-                  </div>
-
-                  <div className="rounded-xl border border-slate-800 bg-slate-950/70 px-5 py-4">
-                    <p className="text-xs uppercase tracking-wider text-slate-500">
-                      Total saved
-                    </p>
-
-                    <p className="mt-1 text-3xl font-bold">
-                      {bookmarks.length}
-                    </p>
-                  </div>
+            <div className="rounded-2xl border border-slate-200 bg-white p-4.5 shadow-sm dark:border-slate-800 dark:bg-slate-900/60">
+              <div className="flex items-center justify-between">
+                <p className="text-xs font-medium text-slate-500 dark:text-slate-400">PR in Progress</p>
+                <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-purple-50 text-purple-600 dark:bg-purple-500/10 dark:text-purple-400">
+                  <GitPullRequest className="h-4 w-4" />
                 </div>
               </div>
-            </section>
+              <p className="mt-2 text-2xl sm:text-3xl font-bold text-slate-900 dark:text-white">
+                {prOpen}
+              </p>
+              <p className="mt-1 text-[11px] text-slate-400 dark:text-slate-500">
+                Active pull requests open
+              </p>
+            </div>
 
-            {/* Stats */}
-            {bookmarks.length > 0 && (
-              <section className="mb-8 grid gap-4 sm:grid-cols-3">
-                <div className="rounded-2xl border border-slate-800 bg-slate-900/60 p-5">
-                  <div className="flex items-center justify-between">
-                    <p className="text-sm text-slate-500">
-                      Investigating
-                    </p>
-
-                    <span className="h-2 w-2 rounded-full bg-blue-400" />
-                  </div>
-
-                  <p className="mt-2 text-3xl font-bold">
-                    {investigating}
-                  </p>
-
-                  <p className="mt-1 text-xs text-slate-600">
-                    Issues you're currently exploring
-                  </p>
+            <div className="rounded-2xl border border-slate-200 bg-white p-4.5 shadow-sm dark:border-slate-800 dark:bg-slate-900/60">
+              <div className="flex items-center justify-between">
+                <p className="text-xs font-medium text-slate-500 dark:text-slate-400">Resolved</p>
+                <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-emerald-50 text-emerald-600 dark:bg-emerald-500/10 dark:text-emerald-400">
+                  <CheckCircle2 className="h-4 w-4" />
                 </div>
+              </div>
+              <p className="mt-2 text-2xl sm:text-3xl font-bold text-slate-900 dark:text-white">
+                {resolved}
+              </p>
+              <p className="mt-1 text-[11px] text-slate-400 dark:text-slate-500">
+                Successfully merged & solved
+              </p>
+            </div>
+          </section>
+        )}
 
-                <div className="rounded-2xl border border-slate-800 bg-slate-900/60 p-5">
-                  <div className="flex items-center justify-between">
-                    <p className="text-sm text-slate-500">
-                      PR open
-                    </p>
+        {/* Empty state or list */}
+        {bookmarks.length === 0 ? (
+          <section className="flex min-h-[360px] flex-col items-center justify-center rounded-3xl border border-dashed border-slate-200 bg-white/60 p-8 text-center dark:border-slate-800 dark:bg-slate-900/30">
+            <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-slate-100 text-slate-400 dark:bg-slate-800 dark:text-slate-500 shadow-sm">
+              <SearchX className="h-7 w-7" />
+            </div>
 
-                    <span className="h-2 w-2 rounded-full bg-purple-400" />
-                  </div>
+            <h2 className="text-lg font-bold text-slate-900 dark:text-slate-200">
+              No Bookmarked Issues Yet
+            </h2>
 
-                  <p className="mt-2 text-3xl font-bold">
-                    {prOpen}
-                  </p>
+            <p className="mt-2 max-w-md text-sm leading-6 text-slate-500 dark:text-slate-400">
+              Save interesting issues from your personalized feed, and they will appear here with workflow status management.
+            </p>
 
-                  <p className="mt-1 text-xs text-slate-600">
-                    Contributions in progress
-                  </p>
-                </div>
-
-                <div className="rounded-2xl border border-slate-800 bg-slate-900/60 p-5">
-                  <div className="flex items-center justify-between">
-                    <p className="text-sm text-slate-500">
-                      Resolved
-                    </p>
-
-                    <span className="h-2 w-2 rounded-full bg-emerald-400" />
-                  </div>
-
-                  <p className="mt-2 text-3xl font-bold">
-                    {resolved}
-                  </p>
-
-                  <p className="mt-1 text-xs text-slate-600">
-                    Successfully completed
-                  </p>
-                </div>
-              </section>
-            )}
-
-            {/* Empty state */}
-            {bookmarks.length === 0 ? (
-              <section className="flex min-h-[400px] flex-col items-center justify-center rounded-2xl border border-dashed border-slate-800 bg-slate-900/30 px-6 text-center">
-                <div className="mb-5 flex h-16 w-16 items-center justify-center rounded-2xl bg-slate-800 text-2xl">
-                  🔖
-                </div>
-
-                <h2 className="text-lg font-semibold text-slate-200">
-                  No bookmarks yet
-                </h2>
-
-                <p className="mt-2 max-w-md text-sm leading-6 text-slate-500">
-                  When you find an issue worth exploring, save it from
-                  your dashboard and it'll appear here.
+            <Link
+              href="/dashboard"
+              className="mt-6 inline-flex items-center gap-2 rounded-xl bg-blue-600 px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-blue-500"
+            >
+              <ArrowLeft className="h-4 w-4" />
+              <span>Explore Feed Issues</span>
+            </Link>
+          </section>
+        ) : (
+          <section>
+            <div className="mb-4 flex items-center justify-between">
+              <div>
+                <p className="text-xs font-semibold uppercase tracking-wider text-blue-600 dark:text-blue-400">
+                  Library
                 </p>
+                <h3 className="text-xl font-bold text-slate-900 dark:text-white">
+                  Saved Issues
+                </h3>
+              </div>
 
-                <a
-                  href="/dashboard"
-                  className="mt-6 rounded-xl bg-blue-600 px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-blue-500"
-                >
-                  Explore issues
-                </a>
-              </section>
-            ) : (
-              /* Bookmark list */
-              <section>
-                <div className="mb-4 flex items-end justify-between">
-                  <div>
-                    <p className="text-sm font-medium text-blue-400">
-                      Saved for later
-                    </p>
+              <span className="text-xs font-medium text-slate-500 dark:text-slate-400">
+                {bookmarks.length} {bookmarks.length === 1 ? "issue" : "issues"}
+              </span>
+            </div>
 
-                    <h2 className="mt-1 text-xl font-bold tracking-tight">
-                      Your issues
-                    </h2>
-                  </div>
+            <div className="space-y-3.5">
+              {bookmarks.map((bm) => {
+                const score = Math.round(bm.issue.solvabilityScore);
+                const scoreStyle = getScoreStyle(score);
 
-                  <p className="text-xs text-slate-600">
-                    {bookmarks.length}{" "}
-                    {bookmarks.length === 1 ? "issue" : "issues"}
-                  </p>
-                </div>
+                return (
+                  <article
+                    key={bm.id}
+                    className="group rounded-2xl border border-slate-200 bg-white p-5 transition-all duration-200 hover:border-blue-400/50 hover:shadow-md dark:border-slate-800 dark:bg-slate-900/50 dark:hover:border-slate-700 dark:hover:bg-slate-900/80"
+                  >
+                    <div className="flex flex-col gap-4">
+                      {/* Top */}
+                      <div className="flex items-start justify-between gap-4">
+                        <div className="min-w-0 flex-1">
+                          {/* Repository */}
+                          <div className="mb-2 flex flex-wrap items-center gap-2 text-xs">
+                            <span className="flex items-center gap-1.5 font-medium text-slate-600 dark:text-slate-400">
+                              <GitBranch className="h-3.5 w-3.5 text-slate-400" />
+                              <span className="truncate max-w-[220px] sm:max-w-none">
+                                {bm.issue.repository.fullName}
+                              </span>
+                            </span>
 
-                <div className="space-y-3">
-                  {bookmarks.map((bm) => {
-                    const score = Math.round(
-                      bm.issue.solvabilityScore
-                    );
+                            <span className="text-slate-300 dark:text-slate-700">•</span>
 
-                    const scoreStyle = getScoreStyle(score);
-
-                    return (
-                      <article
-                        key={bm.id}
-                        className="group rounded-2xl border border-slate-800 bg-slate-900/50 p-5 transition-all duration-200 hover:border-slate-700 hover:bg-slate-900/80 hover:shadow-xl hover:shadow-black/10"
-                      >
-                        <div className="flex flex-col gap-5">
-                          {/* Top */}
-                          <div className="flex items-start justify-between gap-4">
-                            <div className="min-w-0 flex-1">
-                              {/* Repository */}
-                              <div className="mb-2 flex items-center gap-2">
-                                <div className="flex h-6 w-6 items-center justify-center rounded-md bg-slate-800 text-xs">
-                                  ◈
-                                </div>
-
-                                <span className="truncate text-xs font-medium text-slate-500">
-                                  {bm.issue.repository.fullName}
-                                </span>
-
-                                <span className="text-slate-700">
-                                  •
-                                </span>
-
-                                <span className="shrink-0 text-xs text-slate-500">
-                                  ⭐{" "}
-                                  {bm.issue.repository.starsCount.toLocaleString()}
-                                </span>
-                              </div>
-
-                              {/* Title */}
-                              <a
-                                href={bm.issue.htmlUrl}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="block text-base font-semibold leading-6 text-slate-100 transition-colors group-hover:text-blue-400 sm:text-lg"
-                              >
-                                {bm.issue.title}
-                              </a>
-                            </div>
-
-                            {/* Status */}
-                            <div className="shrink-0">
-                              <BookmarkStatusSelect
-                                issueId={bm.issueId}
-                                currentStatus={bm.status as any}
-                              />
-                            </div>
-                          </div>
-
-                          {/* Labels */}
-                          {bm.issue.labels.length > 0 && (
-                            <div className="flex flex-wrap gap-1.5">
-                              {bm.issue.labels.map((label) => (
-                                <span
-                                  key={label}
-                                  className="rounded-md border border-slate-700 bg-slate-800/70 px-2 py-1 text-[11px] font-medium text-slate-400 transition group-hover:border-slate-600"
-                                >
-                                  {label}
-                                </span>
-                              ))}
-                            </div>
-                          )}
-
-                          {/* Bottom */}
-                          <div className="flex flex-wrap items-center justify-between gap-3 border-t border-slate-800 pt-4">
-                            <div className="flex items-center gap-3">
-                              {/* Score */}
-                              <div
-                                className={`flex items-center gap-2 rounded-lg border px-2.5 py-1.5 ${scoreStyle.bg} ${scoreStyle.border}`}
-                              >
-                                <span
-                                  className={`text-sm font-bold ${scoreStyle.text}`}
-                                >
-                                  {score}
-                                </span>
-
-                                <span
-                                  className={`text-[11px] ${scoreStyle.text}`}
-                                >
-                                  {scoreStyle.label} solvability
-                                </span>
-                              </div>
-
-                              {/* Open */}
-                              <a
-                                href={bm.issue.htmlUrl}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="hidden items-center gap-1 text-xs text-slate-500 transition hover:text-slate-300 sm:flex"
-                              >
-                                Open issue
-
-                                <svg
-                                  viewBox="0 0 20 20"
-                                  fill="currentColor"
-                                  className="h-3.5 w-3.5"
-                                >
-                                  <path d="M11 3a1 1 0 0 0 0 2h2.586L9.293 9.293a1 1 0 1 0 1.414 1.414L15 6.414V9a1 1 0 1 0 2 0V4a1 1 0 0 0-1-1h-5Z" />
-                                  <path d="M5 5a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2v-3a1 1 0 1 0-2 0v3H5V7h3a1 1 0 1 0-2-2H5Z" />
-                                </svg>
-                              </a>
-                            </div>
-
-                            <span className="text-xs text-slate-600">
-                              Saved issue
+                            <span className="flex items-center gap-1 font-medium text-slate-500 dark:text-slate-400">
+                              <Star className="h-3.5 w-3.5 text-amber-500 fill-amber-500/30" />
+                              {bm.issue.repository.starsCount.toLocaleString()}
                             </span>
                           </div>
+
+                          {/* Title */}
+                          <a
+                            href={bm.issue.htmlUrl}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="inline-flex items-center gap-1.5 text-base sm:text-lg font-semibold leading-snug text-slate-900 transition-colors group-hover:text-blue-600 dark:text-slate-100 dark:group-hover:text-blue-400"
+                          >
+                            <span>{bm.issue.title}</span>
+                            <ExternalLink className="h-3.5 w-3.5 shrink-0 opacity-0 transition-opacity group-hover:opacity-100 text-slate-400" />
+                          </a>
                         </div>
-                      </article>
-                    );
-                  })}
-                </div>
-              </section>
-            )}
-          </div>
-        </main>
+
+                        {/* Status Select */}
+                        <div className="shrink-0">
+                          <BookmarkStatusSelect
+                            issueId={bm.issueId}
+                            currentStatus={bm.status as BookmarkStatus}
+                          />
+                        </div>
+                      </div>
+
+                      {/* Labels */}
+                      {bm.issue.labels.length > 0 && (
+                        <div className="flex flex-wrap gap-1.5">
+                          {bm.issue.labels.map((label) => (
+                            <span
+                              key={label}
+                              className="rounded-md border border-slate-200 bg-slate-50 px-2 py-0.5 text-[11px] font-medium text-slate-600 transition dark:border-slate-700/80 dark:bg-slate-800/70 dark:text-slate-300"
+                            >
+                              {label}
+                            </span>
+                          ))}
+                        </div>
+                      )}
+
+                      {/* Bottom Footer */}
+                      <div className="flex flex-wrap items-center justify-between gap-3 border-t border-slate-100 pt-3.5 dark:border-slate-800/80">
+                        <div className="flex items-center gap-3">
+                          {/* Score Badge */}
+                          <div
+                            className={`flex items-center gap-1.5 rounded-lg border px-2.5 py-1 text-xs font-bold ${scoreStyle.bg} ${scoreStyle.text}`}
+                          >
+                            <Zap className="h-3 w-3" />
+                            <span>{score}</span>
+                            <span className="hidden sm:inline text-[11px] font-medium opacity-80">
+                              {scoreStyle.label}
+                            </span>
+                          </div>
+
+                          <a
+                            href={bm.issue.htmlUrl}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="hidden items-center gap-1 text-xs text-slate-500 transition hover:text-blue-600 dark:text-slate-400 dark:hover:text-blue-400 sm:flex"
+                          >
+                            <span>View on GitHub</span>
+                            <ExternalLink className="h-3 w-3" />
+                          </a>
+                        </div>
+
+                        <span className="text-[11px] text-slate-400 dark:text-slate-500">
+                          Saved issue
+                        </span>
+                      </div>
+                    </div>
+                  </article>
+                );
+              })}
+            </div>
+          </section>
+        )}
       </div>
-    </div>
+    </DashboardLayout>
   );
 }
-

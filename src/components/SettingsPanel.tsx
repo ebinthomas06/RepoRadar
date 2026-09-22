@@ -5,6 +5,17 @@ import {
   updateUserPreferences,
   signOutUser,
 } from "@/actions/preferences";
+import {
+  Sliders,
+  ChevronDown,
+  Star,
+  CheckCircle2,
+  AlertTriangle,
+  LogOut,
+  Save,
+  Loader2,
+  Mail,
+} from "lucide-react";
 
 interface SettingsPanelProps {
   initialSettings: {
@@ -80,59 +91,54 @@ export function SettingsPanel({
   };
 
   return (
-    <div className="w-full bg-transparent text-slate-200">
-
-      {/* Header */}
+    <div className="w-full">
+      {/* Header Button */}
       <button
         type="button"
         onClick={() => setIsOpen((prev) => !prev)}
-        className="!flex !w-full !items-center !justify-between !rounded-xl !border !border-slate-700 !bg-slate-900 !px-4 !py-3 !text-left !text-slate-200 transition hover:!border-slate-600 hover:!bg-slate-800"
+        className="flex w-full items-center justify-between rounded-xl border border-slate-200 bg-white p-3.5 text-left text-slate-800 transition hover:border-slate-300 hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200 dark:hover:border-slate-600 dark:hover:bg-slate-800/80 shadow-sm"
       >
         <div className="flex items-center gap-3">
-          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-slate-800 text-sm">
-            ⚙
+          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-blue-50 text-blue-600 dark:bg-slate-800 dark:text-blue-400">
+            <Sliders className="h-4 w-4" />
           </div>
 
           <div>
-            <div className="text-sm font-semibold text-slate-200">
-              Settings
+            <div className="text-sm font-semibold text-slate-900 dark:text-slate-100">
+              Feed Settings
             </div>
 
-            <div className="mt-0.5 text-xs text-slate-500">
-              Customize your feed
+            <div className="mt-0.5 text-xs text-slate-500 dark:text-slate-400">
+              Customize filters and digest
             </div>
           </div>
         </div>
 
-        <span
-          className={`text-sm text-slate-500 transition-transform ${
+        <ChevronDown
+          className={`h-4 w-4 text-slate-400 transition-transform duration-200 ${
             isOpen ? "rotate-180" : ""
           }`}
-        >
-          ▼
-        </span>
+        />
       </button>
 
-      {/* Content */}
+      {/* Accordion Content */}
       {isOpen && (
-        <div className="mt-3 !rounded-2xl !border !border-slate-800 !bg-slate-900 !p-5 !text-slate-200">
-
-          <div className="space-y-7">
-
+        <div className="mt-3 rounded-2xl border border-slate-200 bg-white p-5 text-slate-800 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-200 shadow-sm">
+          <div className="space-y-6">
             {/* Solvability */}
             <div>
-              <div className="mb-3 flex items-start justify-between gap-4">
+              <div className="mb-2 flex items-start justify-between gap-4">
                 <div>
-                  <label className="block !text-sm !font-medium !text-slate-200">
+                  <label className="block text-sm font-semibold text-slate-900 dark:text-slate-100">
                     Minimum Solvability Score
                   </label>
 
-                  <p className="mt-1 !text-xs !text-slate-500">
-                    Only show issues above your selected threshold.
+                  <p className="mt-0.5 text-xs text-slate-500 dark:text-slate-400">
+                    Only show issues meeting this confidence threshold.
                   </p>
                 </div>
 
-                <span className="rounded-lg border border-blue-500/20 bg-blue-500/10 px-2.5 py-1 text-sm font-bold text-blue-400">
+                <span className="rounded-lg border border-blue-200 bg-blue-50 px-2.5 py-1 text-xs font-bold text-blue-700 dark:border-blue-500/20 dark:bg-blue-500/10 dark:text-blue-400">
                   {settings.minSolvability}
                 </span>
               </div>
@@ -143,35 +149,30 @@ export function SettingsPanel({
                 max={100}
                 value={settings.minSolvability}
                 onChange={(e) =>
-                  handleChange(
-                    "minSolvability",
-                    Number(e.target.value)
-                  )
+                  handleChange("minSolvability", Number(e.target.value))
                 }
-                className="!h-2 !w-full cursor-pointer appearance-none rounded-full !bg-slate-700 accent-blue-500"
+                className="h-2 w-full cursor-pointer appearance-none rounded-full bg-slate-200 accent-blue-600 dark:bg-slate-700 dark:accent-blue-500"
               />
 
-              <div className="mt-2 flex justify-between !text-[11px] !text-slate-600">
+              <div className="mt-1 flex justify-between text-[11px] font-medium text-slate-400 dark:text-slate-500">
                 <span>0</span>
                 <span>50</span>
                 <span>100</span>
               </div>
             </div>
 
-            {/* Repository stars */}
+            {/* Repository Stars */}
             <div>
-              <label className="block !text-sm !font-medium !text-slate-200">
+              <label className="block text-sm font-semibold text-slate-900 dark:text-slate-100">
                 Minimum Repository Stars
               </label>
 
-              <p className="mt-1 !text-xs !text-slate-500">
-                Only show issues from repositories with enough activity.
+              <p className="mt-0.5 text-xs text-slate-500 dark:text-slate-400">
+                Filter out repos below your star threshold.
               </p>
 
-              <div className="relative mt-3">
-                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-sm">
-                  ⭐
-                </span>
+              <div className="relative mt-2.5">
+                <Star className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-amber-500 fill-amber-500/30" />
 
                 <input
                   type="number"
@@ -183,19 +184,19 @@ export function SettingsPanel({
                       Math.max(0, Number(e.target.value))
                     )
                   }
-                  className="!h-10 !w-full !rounded-lg !border !border-slate-700 !bg-slate-950 !pl-9 !pr-3 !text-sm !text-slate-200 outline-none placeholder:!text-slate-600 focus:!border-blue-500"
+                  className="h-10 w-full rounded-xl border border-slate-200 bg-slate-50 pl-9 pr-3 text-sm text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-blue-500 focus:bg-white dark:border-slate-700 dark:bg-slate-950 dark:text-slate-100 dark:placeholder:text-slate-600 dark:focus:border-blue-500"
                 />
               </div>
             </div>
 
-            {/* Digest */}
+            {/* Digest Frequency */}
             <div>
-              <label className="block !text-sm !font-medium !text-slate-200">
-                Digest Email Frequency
+              <label className="block text-sm font-semibold text-slate-900 dark:text-slate-100">
+                Email Digest Frequency
               </label>
 
-              <p className="mt-1 !text-xs !text-slate-500">
-                How often you receive curated issue recommendations.
+              <p className="mt-0.5 text-xs text-slate-500 dark:text-slate-400">
+                Schedule your periodic issue highlights.
               </p>
 
               <select
@@ -203,47 +204,39 @@ export function SettingsPanel({
                 onChange={(e) =>
                   handleChange(
                     "digestFreq",
-                    e.target.value as
-                      | "DAILY"
-                      | "WEEKLY"
-                      | "NEVER"
+                    e.target.value as "DAILY" | "WEEKLY" | "NEVER"
                   )
                 }
-                className="mt-3 !h-10 !w-full !rounded-lg !border !border-slate-700 !bg-slate-950 !px-3 !text-sm !text-slate-200 outline-none focus:!border-blue-500"
+                className="mt-2.5 h-10 w-full rounded-xl border border-slate-200 bg-slate-50 px-3 text-sm text-slate-900 outline-none transition focus:border-blue-500 focus:bg-white dark:border-slate-700 dark:bg-slate-950 dark:text-slate-100 dark:focus:border-blue-500"
               >
-                <option
-                  value="DAILY"
-                  className="bg-slate-950 text-slate-200"
-                >
+                <option value="DAILY" className="bg-white text-slate-900 dark:bg-slate-950 dark:text-slate-100">
                   Daily (every morning)
                 </option>
 
-                <option
-                  value="WEEKLY"
-                  className="bg-slate-950 text-slate-200"
-                >
+                <option value="WEEKLY" className="bg-white text-slate-900 dark:bg-slate-950 dark:text-slate-100">
                   Weekly (every Monday)
                 </option>
 
-                <option
-                  value="NEVER"
-                  className="bg-slate-950 text-slate-200"
-                >
-                  Never (turn off)
+                <option value="NEVER" className="bg-white text-slate-900 dark:bg-slate-950 dark:text-slate-100">
+                  Never (disabled)
                 </option>
               </select>
             </div>
 
-            {/* Email alerts */}
-            <div className="flex items-center justify-between rounded-xl border border-slate-800 bg-slate-950 p-4">
-              <div>
-                <p className="!text-sm !font-medium !text-slate-200">
-                  Email alerts
-                </p>
-
-                <p className="mt-1 !text-xs !text-slate-500">
-                  Receive email notifications for digests and updates.
-                </p>
+            {/* Email alerts switch */}
+            <div className="flex items-center justify-between rounded-xl border border-slate-200 bg-slate-50 p-3.5 dark:border-slate-800 dark:bg-slate-950">
+              <div className="flex items-center gap-3">
+                <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-blue-100 text-blue-600 dark:bg-slate-800 dark:text-blue-400">
+                  <Mail className="h-4 w-4" />
+                </div>
+                <div>
+                  <p className="text-sm font-semibold text-slate-900 dark:text-slate-100">
+                    Email notifications
+                  </p>
+                  <p className="text-xs text-slate-500 dark:text-slate-400">
+                    Receive inbox alerts for digests.
+                  </p>
+                </div>
               </div>
 
               <button
@@ -251,62 +244,67 @@ export function SettingsPanel({
                 role="switch"
                 aria-checked={settings.emailAlerts}
                 onClick={() =>
-                  handleChange(
-                    "emailAlerts",
-                    !settings.emailAlerts
-                  )
+                  handleChange("emailAlerts", !settings.emailAlerts)
                 }
-                className={`relative !h-6 !w-11 !rounded-full !border-0 transition ${
-                  settings.emailAlerts
-                    ? "!bg-blue-500"
-                    : "!bg-slate-700"
+                className={`relative h-6 w-11 rounded-full transition-colors ${
+                  settings.emailAlerts ? "bg-blue-600" : "bg-slate-300 dark:bg-slate-700"
                 }`}
               >
                 <span
-                  className={`absolute top-1 h-4 w-4 rounded-full bg-white transition-transform ${
-                    settings.emailAlerts
-                      ? "translate-x-6"
-                      : "translate-x-1"
+                  className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
+                    settings.emailAlerts ? "translate-x-6" : "translate-x-1"
                   }`}
                 />
               </button>
             </div>
 
-            {/* Message */}
+            {/* Notification message */}
             {message && (
               <div
-                className={`rounded-xl border px-4 py-3 text-sm ${
+                className={`flex items-center gap-2 rounded-xl border px-3.5 py-2.5 text-xs font-medium ${
                   message.type === "success"
-                    ? "border-emerald-500/20 bg-emerald-500/10 !text-emerald-400"
-                    : "border-red-500/20 bg-red-500/10 !text-red-400"
+                    ? "border-emerald-200 bg-emerald-50 text-emerald-700 dark:border-emerald-500/20 dark:bg-emerald-500/10 dark:text-emerald-400"
+                    : "border-red-200 bg-red-50 text-red-700 dark:border-red-500/20 dark:bg-red-500/10 dark:text-red-400"
                 }`}
               >
-                {message.type === "success" ? "✓ " : "⚠ "}
-                {message.text}
+                {message.type === "success" ? (
+                  <CheckCircle2 className="h-4 w-4 shrink-0 text-emerald-600 dark:text-emerald-400" />
+                ) : (
+                  <AlertTriangle className="h-4 w-4 shrink-0 text-red-600 dark:text-red-400" />
+                )}
+                <span>{message.text}</span>
               </div>
             )}
 
-            {/* Buttons */}
-            <div className="flex gap-3 border-t border-slate-800 pt-5">
-
+            {/* Action Buttons */}
+            <div className="flex gap-3 border-t border-slate-200 pt-4 dark:border-slate-800">
               <button
                 type="button"
                 onClick={handleSave}
                 disabled={isSaving}
-                className="!flex !flex-1 !items-center !justify-center !rounded-xl !border-0 !bg-blue-600 !px-4 !py-2.5 !text-sm !font-semibold !text-white transition hover:!bg-blue-500 disabled:!opacity-50"
+                className="flex flex-1 items-center justify-center gap-2 rounded-xl bg-blue-600 px-4 py-2.5 text-xs sm:text-sm font-semibold text-white shadow-sm transition hover:bg-blue-500 disabled:opacity-50"
               >
-                {isSaving ? "Saving..." : "Save Settings"}
+                {isSaving ? (
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                ) : (
+                  <Save className="h-4 w-4" />
+                )}
+                <span>{isSaving ? "Saving..." : "Save Settings"}</span>
               </button>
 
               <button
                 type="button"
                 onClick={handleSignOut}
                 disabled={isSigningOut}
-                className="!flex !flex-1 !items-center !justify-center !rounded-xl !border !border-red-500/20 !bg-red-500/10 !px-4 !py-2.5 !text-sm !font-semibold !text-red-400 transition hover:!bg-red-500/20 disabled:!opacity-50"
+                className="flex items-center justify-center gap-2 rounded-xl border border-red-200 bg-red-50 px-4 py-2.5 text-xs sm:text-sm font-semibold text-red-600 transition hover:bg-red-100 dark:border-red-500/20 dark:bg-red-500/10 dark:text-red-400 dark:hover:bg-red-500/20 disabled:opacity-50"
               >
-                {isSigningOut ? "Signing out..." : "Sign Out"}
+                {isSigningOut ? (
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                ) : (
+                  <LogOut className="h-4 w-4" />
+                )}
+                <span>{isSigningOut ? "Signing out..." : "Sign Out"}</span>
               </button>
-
             </div>
           </div>
         </div>

@@ -7,19 +7,34 @@ import { TagManager } from "@/components/TagManager";
 import { IssueFeed } from "@/components/IssueFeed";
 import { SettingsPanel } from "@/components/SettingsPanel";
 import { getFeedForCurrentUser } from "@/actions/feed";
+import { DashboardLayout } from "@/components/DashboardLayout";
+import {
+  Sparkles,
+  Sliders,
+  CheckCircle2,
+  Inbox,
+  Tags,
+  Mail,
+  Flame,
+  Bookmark,
+} from "lucide-react";
+import Link from "next/link";
 
 export default async function DashboardPage() {
   const session = await auth();
 
-  if (!session?.user) {
+  if (!session?.user?.id) {
     redirect("/login");
   }
 
-  const [preferences, issues] = await Promise.all([
+  const [preferences, issues, bookmarkCount] = await Promise.all([
     prisma.userPreferences.findUnique({
       where: { userId: session.user.id },
     }),
     getFeedForCurrentUser(),
+    prisma.userBookmark.count({
+      where: { userId: session.user.id },
+    }),
   ]);
 
   const userName = session.user.name || "Developer";
@@ -29,261 +44,226 @@ export default async function DashboardPage() {
   const tags = preferences?.preferredTags ?? [];
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100">
-      {/* Background decoration */}
-      <div className="pointer-events-none fixed inset-0 overflow-hidden">
-        <div className="absolute -top-40 left-1/3 h-96 w-96 rounded-full bg-blue-600/10 blur-3xl" />
-        <div className="absolute right-0 top-1/3 h-96 w-96 rounded-full bg-purple-600/10 blur-3xl" />
-      </div>
+    <DashboardLayout
+      user={{
+        name: userName,
+        email: userEmail,
+        image: avatar,
+      }}
+      bookmarkCount={bookmarkCount}
+    >
+      {/* Top bar */}
+      <header className="sticky top-0 z-20 hidden lg:block border-b border-slate-200/80 bg-white/80 backdrop-blur-xl dark:border-slate-800/80 dark:bg-slate-950/80">
+        <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-6 sm:px-8">
+          <div>
+            <p className="text-xs font-medium text-slate-500 dark:text-slate-400">Personalized Discovery</p>
+            <h1 className="text-lg font-bold tracking-tight text-slate-900 dark:text-slate-100">
+              Developer Feed
+            </h1>
+          </div>
 
-      <div className="relative flex min-h-screen">
-        {/* Sidebar */}
-        <aside className="hidden w-64 shrink-0 border-r border-slate-800 bg-slate-950/80 backdrop-blur-xl lg:block">
-          <div className="sticky top-0 flex h-screen flex-col p-5">
-            {/* Logo */}
-            <div className="mb-10 flex items-center gap-3 px-2">
-              <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-blue-500 to-indigo-600 font-bold shadow-lg shadow-blue-500/20">
-                I
-              </div>
+          <Link
+            href="/bookmarks"
+            className="flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-3.5 py-2 text-xs font-semibold text-slate-700 shadow-sm transition hover:border-slate-300 hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-300 dark:hover:border-slate-600 dark:hover:bg-slate-800 dark:hover:text-white"
+          >
+            <Bookmark className="h-4 w-4 text-blue-600 dark:text-blue-400" />
+            <span>Saved Bookmarks</span>
+            {bookmarkCount > 0 && (
+              <span className="rounded-full bg-blue-100 px-1.5 py-0.5 text-[10px] font-bold text-blue-700 dark:bg-blue-500/20 dark:text-blue-300">
+                {bookmarkCount}
+              </span>
+            )}
+          </Link>
+        </div>
+      </header>
+
+      <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 sm:py-8 lg:px-8">
+        {/* Welcome Hero Section */}
+        <section className="mb-6 sm:mb-8 overflow-hidden rounded-3xl border border-slate-200 bg-gradient-to-br from-white via-slate-50 to-blue-50/30 p-6 sm:p-8 shadow-sm dark:border-slate-800 dark:bg-gradient-to-br dark:from-slate-900 dark:via-slate-900/90 dark:to-slate-950">
+          <div className="relative flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between">
+            <div className="flex items-center gap-4 sm:gap-5">
+              {avatar ? (
+                <img
+                  src={avatar}
+                  alt={userName}
+                  className="h-14 w-14 sm:h-16 sm:w-16 rounded-2xl ring-2 ring-blue-500/20 shadow-md object-cover"
+                />
+              ) : (
+                <div className="flex h-14 w-14 sm:h-16 sm:w-16 items-center justify-center rounded-2xl bg-gradient-to-br from-blue-600 to-indigo-600 text-xl font-bold text-white shadow-lg shadow-blue-500/20">
+                  {userName.charAt(0).toUpperCase()}
+                </div>
+              )}
 
               <div>
-                <p className="font-semibold tracking-tight">IssueHub</p>
-                <p className="text-xs text-slate-500">Developer Feed</p>
+                <div className="flex items-center gap-2">
+                  <span className="text-xs font-semibold uppercase tracking-wider text-blue-600 dark:text-blue-400">
+                    Welcome back
+                  </span>
+                  <Sparkles className="h-3.5 w-3.5 text-blue-500" />
+                </div>
+
+                <h2 className="mt-0.5 text-xl font-bold tracking-tight text-slate-900 sm:text-2xl lg:text-3xl dark:text-white">
+                  {userName}
+                </h2>
+
+                <p className="mt-1 text-xs sm:text-sm text-slate-500 dark:text-slate-400">
+                  {userEmail}
+                </p>
               </div>
             </div>
 
-            {/* Navigation */}
-            <nav className="space-y-1">
-              <a
-                href="/dashboard"
-                className="flex items-center gap-3 rounded-xl bg-slate-800/80 px-3 py-2.5 text-sm font-medium text-white"
-              >
-                <span>⌂</span>
-                Dashboard
-              </a>
+            <div className="flex items-center gap-3 self-start sm:self-auto rounded-2xl border border-slate-200 bg-white/80 px-4 py-3 shadow-sm dark:border-slate-800 dark:bg-slate-950/70">
+              <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-emerald-50 text-emerald-600 dark:bg-emerald-500/10 dark:text-emerald-400">
+                <CheckCircle2 className="h-5 w-5" />
+              </div>
+              <div>
+                <p className="text-[10px] font-semibold uppercase tracking-wider text-slate-400 dark:text-slate-500">
+                  Feed Status
+                </p>
+                <div className="flex items-center gap-1.5">
+                  <span className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
+                  <span className="text-xs font-semibold text-slate-800 dark:text-slate-200">
+                    Personalized Active
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
 
-              <a
-                href="/bookmarks"
-                className="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm text-slate-400 transition hover:bg-slate-800 hover:text-white"
-              >
-                <span>🔖</span>
-                Bookmarks
-              </a>
+        {/* Stats Grid */}
+        <section className="mb-6 sm:mb-8 grid grid-cols-1 gap-3 sm:grid-cols-3 sm:gap-4">
+          <div className="rounded-2xl border border-slate-200 bg-white p-4.5 shadow-sm transition hover:shadow dark:border-slate-800 dark:bg-slate-900/60">
+            <div className="flex items-center justify-between">
+              <p className="text-xs font-medium text-slate-500 dark:text-slate-400">Issues available</p>
+              <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-blue-50 text-blue-600 dark:bg-blue-500/10 dark:text-blue-400">
+                <Inbox className="h-4 w-4" />
+              </div>
+            </div>
+            <p className="mt-2 text-2xl sm:text-3xl font-bold text-slate-900 dark:text-white">
+              {issues?.length ?? 0}
+            </p>
+            <p className="mt-1 text-[11px] text-slate-400 dark:text-slate-500">
+              Ranked by solvability & interests
+            </p>
+          </div>
 
-              <a
-                href="#settings"
-                className="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm text-slate-400 transition hover:bg-slate-800 hover:text-white"
-              >
-                <span>⚙</span>
-                Settings
-              </a>
-            </nav>
+          <div className="rounded-2xl border border-slate-200 bg-white p-4.5 shadow-sm transition hover:shadow dark:border-slate-800 dark:bg-slate-900/60">
+            <div className="flex items-center justify-between">
+              <p className="text-xs font-medium text-slate-500 dark:text-slate-400">Selected Interests</p>
+              <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-indigo-50 text-indigo-600 dark:bg-indigo-500/10 dark:text-indigo-400">
+                <Tags className="h-4 w-4" />
+              </div>
+            </div>
+            <p className="mt-2 text-2xl sm:text-3xl font-bold text-slate-900 dark:text-white">
+              {tags.length}
+            </p>
+            <p className="mt-1 text-[11px] text-slate-400 dark:text-slate-500">
+              Active technology filters
+            </p>
+          </div>
 
-            {/* Bottom profile */}
-            <div className="mt-auto border-t border-slate-800 pt-4">
-              <div className="flex items-center gap-3 rounded-xl p-2">
-                {avatar ? (
-                  <img
-                    src={avatar}
-                    alt={userName}
-                    className="h-9 w-9 rounded-full ring-2 ring-slate-700"
-                  />
-                ) : (
-                  <div className="flex h-9 w-9 items-center justify-center rounded-full bg-slate-800 text-sm font-semibold">
-                    {userName.charAt(0).toUpperCase()}
-                  </div>
-                )}
+          <div className="rounded-2xl border border-slate-200 bg-white p-4.5 shadow-sm transition hover:shadow dark:border-slate-800 dark:bg-slate-900/60">
+            <div className="flex items-center justify-between">
+              <p className="text-xs font-medium text-slate-500 dark:text-slate-400">Digest Schedule</p>
+              <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-purple-50 text-purple-600 dark:bg-purple-500/10 dark:text-purple-400">
+                <Mail className="h-4 w-4" />
+              </div>
+            </div>
+            <p className="mt-2 text-lg sm:text-xl font-bold text-slate-900 dark:text-white">
+              {preferences?.digestFreq === "NEVER"
+                ? "Disabled"
+                : preferences?.digestFreq === "WEEKLY"
+                  ? "Weekly"
+                  : "Daily"}
+            </p>
+            <p className="mt-1 text-[11px] text-slate-400 dark:text-slate-500">
+              Email recommendation alerts
+            </p>
+          </div>
+        </section>
 
-                <div className="min-w-0">
-                  <p className="truncate text-sm font-medium">{userName}</p>
-                  <p className="truncate text-xs text-slate-500">
-                    {userEmail}
+        {/* Content Layout Grid */}
+        <div className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_340px]">
+          {/* Main Feed Column */}
+          <section className="min-w-0">
+            <div className="mb-4 flex flex-wrap items-center justify-between gap-2">
+              <div>
+                <div className="flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wider text-blue-600 dark:text-blue-400">
+                  <Flame className="h-3.5 w-3.5" />
+                  <span>Personalized</span>
+                </div>
+                <h2 className="mt-0.5 text-xl sm:text-2xl font-bold tracking-tight text-slate-900 dark:text-white">
+                  Issues for You
+                </h2>
+                <p className="mt-0.5 text-xs sm:text-sm text-slate-500 dark:text-slate-400">
+                  Open-source issues matching your preferred tags and confidence score.
+                </p>
+              </div>
+
+              <span className="rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold text-slate-600 dark:bg-slate-800 dark:text-slate-300">
+                {issues?.length ?? 0} {issues?.length === 1 ? "issue" : "issues"}
+              </span>
+            </div>
+
+            {/* Scrollable Container Card for issues */}
+            <div className="rounded-3xl border border-slate-200 bg-white p-3 sm:p-5 shadow-sm dark:border-slate-800 dark:bg-slate-900/50">
+              <IssueFeed issues={issues} />
+            </div>
+          </section>
+
+          {/* Right Sidebar Widgets */}
+          <aside className="space-y-6">
+            {/* Interests Manager */}
+            <section className="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-800 dark:bg-slate-900/60">
+              <div className="mb-4 flex items-center gap-2.5">
+                <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-blue-50 text-blue-600 dark:bg-slate-800 dark:text-blue-400">
+                  <Tags className="h-4 w-4" />
+                </div>
+                <div>
+                  <h3 className="font-bold text-slate-900 dark:text-slate-100">Your Interests</h3>
+                  <p className="text-xs text-slate-500 dark:text-slate-400">
+                    Fine-tune topics to customize your feed.
                   </p>
                 </div>
               </div>
-            </div>
-          </div>
-        </aside>
 
-        {/* Main */}
-        <main className="min-w-0 flex-1">
-          {/* Top bar */}
-          <header className="sticky top-0 z-20 border-b border-slate-800/80 bg-slate-950/80 backdrop-blur-xl">
-            <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-5 sm:px-8">
-              <div>
-                <p className="text-sm text-slate-500">Dashboard</p>
-                <h1 className="text-lg font-semibold tracking-tight">
-                  Your developer feed
-                </h1>
-              </div>
-
-              <a
-                href="/bookmarks"
-                className="rounded-lg border border-slate-700 bg-slate-900 px-3 py-2 text-sm text-slate-300 transition hover:border-slate-600 hover:bg-slate-800 hover:text-white"
-              >
-                🔖 Bookmarks
-              </a>
-            </div>
-          </header>
-
-          <div className="mx-auto max-w-7xl px-5 py-8 sm:px-8">
-            {/* Welcome section */}
-            <section className="mb-8 overflow-hidden rounded-2xl border border-slate-800 bg-gradient-to-br from-slate-900 via-slate-900 to-slate-950">
-              <div className="relative p-6 sm:p-8">
-                <div className="absolute right-0 top-0 h-48 w-48 rounded-full bg-blue-500/10 blur-3xl" />
-
-                <div className="relative flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between">
-                  <div className="flex items-center gap-4">
-                    {avatar ? (
-                      <img
-                        src={avatar}
-                        alt={userName}
-                        className="h-16 w-16 rounded-2xl ring-1 ring-slate-700"
-                      />
-                    ) : (
-                      <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-br from-blue-500 to-indigo-600 text-xl font-bold">
-                        {userName.charAt(0).toUpperCase()}
-                      </div>
-                    )}
-
-                    <div>
-                      <p className="mb-1 text-sm text-slate-400">
-                        Welcome back 👋
-                      </p>
-
-                      <h2 className="text-2xl font-bold tracking-tight sm:text-3xl">
-                        {userName}
-                      </h2>
-
-                      <p className="mt-1 text-sm text-slate-500">
-                        {userEmail}
-                      </p>
-                    </div>
-                  </div>
-
-                  <div className="rounded-xl border border-slate-800 bg-slate-950/70 px-4 py-3">
-                    <p className="text-xs uppercase tracking-wider text-slate-500">
-                      Feed status
-                    </p>
-
-                    <div className="mt-1 flex items-center gap-2">
-                      <span className="h-2 w-2 rounded-full bg-emerald-400 shadow-lg shadow-emerald-400/40" />
-                      <span className="text-sm font-medium text-slate-200">
-                        Personalized
-                      </span>
-                    </div>
-                  </div>
-                </div>
-              </div>
+              <TagManager initialTags={tags} />
             </section>
 
-            {/* Stats */}
-            <section className="mb-8 grid gap-4 sm:grid-cols-3">
-              <div className="rounded-2xl border border-slate-800 bg-slate-900/60 p-5">
-                <p className="text-sm text-slate-500">Issues available</p>
-                <p className="mt-2 text-3xl font-bold">
-                  {issues?.length ?? 0}
-                </p>
-                <p className="mt-1 text-xs text-slate-600">
-                  Based on your current feed
-                </p>
+            {/* Settings Widget */}
+            <section
+              id="settings"
+              className="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-800 dark:bg-slate-900/60"
+            >
+              <div className="mb-4 flex items-center gap-2.5">
+                <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-indigo-50 text-indigo-600 dark:bg-slate-800 dark:text-indigo-400">
+                  <Sliders className="h-4 w-4" />
+                </div>
+                <div>
+                  <h3 className="font-bold text-slate-900 dark:text-slate-100">Preferences</h3>
+                  <p className="text-xs text-slate-500 dark:text-slate-400">
+                    Adjust solvability thresholds and alerts.
+                  </p>
+                </div>
               </div>
 
-              <div className="rounded-2xl border border-slate-800 bg-slate-900/60 p-5">
-                <p className="text-sm text-slate-500">Interests</p>
-                <p className="mt-2 text-3xl font-bold">{tags.length}</p>
-                <p className="mt-1 text-xs text-slate-600">
-                  Technologies & topics
-                </p>
-              </div>
-
-              <div className="rounded-2xl border border-slate-800 bg-slate-900/60 p-5">
-                <p className="text-sm text-slate-500">Digest</p>
-                <p className="mt-2 text-xl font-bold">
-                  {preferences?.digestFreq === "NEVER"
-                    ? "Off"
-                    : preferences?.digestFreq === "WEEKLY"
-                      ? "Weekly"
-                      : "Daily"}
-                </p>
-                <p className="mt-1 text-xs text-slate-600">
-                  Email notifications
-                </p>
-              </div>
+              <SettingsPanel
+                initialSettings={{
+                  minSolvability: preferences?.minSolvability ?? 30,
+                  minRepoStars: preferences?.minRepoStars ?? 0,
+                  digestFreq:
+                    (preferences?.digestFreq as
+                      | "DAILY"
+                      | "WEEKLY"
+                      | "NEVER") ?? "DAILY",
+                  emailAlerts: preferences?.emailAlerts ?? true,
+                }}
+              />
             </section>
-
-            {/* Content grid */}
-            <div className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_340px]">
-              {/* Main feed */}
-              <section className="min-w-0">
-                <div className="mb-4 flex items-end justify-between">
-                  <div>
-                    <p className="text-sm font-medium text-blue-400">
-                      Personalized
-                    </p>
-
-                    <h2 className="mt-1 text-2xl font-bold tracking-tight">
-                      Issues for you
-                    </h2>
-
-                    <p className="mt-1 text-sm text-slate-500">
-                      Open-source issues matching your interests and preferences.
-                    </p>
-                  </div>
-                </div>
-
-                <div className="rounded-2xl border border-slate-800 bg-slate-900/50 p-3 sm:p-5">
-                  <IssueFeed issues={issues} />
-                </div>
-              </section>
-
-              {/* Right sidebar */}
-              <aside className="space-y-6">
-                {/* Interests */}
-                <section className="rounded-2xl border border-slate-800 bg-slate-900/60 p-5">
-                  <div className="mb-4">
-                    <h2 className="font-semibold">Your interests</h2>
-                    <p className="mt-1 text-xs text-slate-500">
-                      Customize the topics used to personalize your feed.
-                    </p>
-                  </div>
-
-                  <TagManager initialTags={tags} />
-                </section>
-
-                {/* Settings */}
-                <section
-                  id="settings"
-                  className="rounded-2xl border border-slate-800 bg-slate-900/60 p-5"
-                >
-                  <div className="mb-4">
-                    <h2 className="font-semibold">Feed settings</h2>
-                    <p className="mt-1 text-xs text-slate-500">
-                      Fine-tune the issues you want to discover.
-                    </p>
-                  </div>
-
-                  <SettingsPanel
-                    initialSettings={{
-                      minSolvability:
-                        preferences?.minSolvability ?? 30,
-                      minRepoStars:
-                        preferences?.minRepoStars ?? 0,
-                      digestFreq:
-                        (preferences?.digestFreq as
-                          | "DAILY"
-                          | "WEEKLY"
-                          | "NEVER") ?? "DAILY",
-                      emailAlerts:
-                        preferences?.emailAlerts ?? true,
-                    }}
-                  />
-                </section>
-              </aside>
-            </div>
-          </div>
-        </main>
+          </aside>
+        </div>
       </div>
-    </div>
+    </DashboardLayout>
   );
 }

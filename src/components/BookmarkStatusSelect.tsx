@@ -5,6 +5,7 @@ import {
   setBookmarkStatus,
   type BookmarkStatus,
 } from "@/actions/bookmarks";
+import { ChevronDown, Loader2 } from "lucide-react";
 
 const STATUSES: {
   value: BookmarkStatus;
@@ -47,7 +48,7 @@ export function BookmarkStatusSelect({
   );
 
   return (
-    <div className="relative inline-flex">
+    <div className="relative inline-flex items-center">
       <select
         value={currentStatus}
         disabled={isPending}
@@ -60,40 +61,32 @@ export function BookmarkStatusSelect({
           });
         }}
         className={`
-          h-9 appearance-none rounded-lg border
-          border-slate-700 bg-slate-900
-          pl-3 pr-8 text-xs font-medium
-          text-slate-300 outline-none
+          h-8.5 appearance-none rounded-xl border
+          border-slate-200 bg-white
+          pl-3 pr-7.5 text-xs font-medium
+          text-slate-700 outline-none
           transition
-          hover:border-slate-600
-          focus:border-blue-500/50
+          hover:border-slate-300
+          focus:border-blue-500/60
           focus:ring-2 focus:ring-blue-500/10
+          dark:border-slate-700 dark:bg-slate-900 dark:text-slate-300
+          dark:hover:border-slate-600
           disabled:cursor-wait disabled:opacity-50
         `}
       >
         {STATUSES.map((status) => (
-          <option key={status.value} value={status.value}>
+          <option key={status.value} value={status.value} className="bg-white text-slate-800 dark:bg-slate-900 dark:text-slate-200">
             {status.label}
           </option>
         ))}
       </select>
 
       {/* Dropdown arrow */}
-      <svg
-        viewBox="0 0 20 20"
-        fill="currentColor"
-        className="pointer-events-none absolute right-2.5 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-slate-500"
-      >
-        <path
-          fillRule="evenodd"
-          d="M5.23 7.21a.75.75 0 0 1 1.06.02L10 11.168l3.71-3.938a.75.75 0 1 1 1.08 1.04l-4.25 4.5a.75.75 0 0 1-1.08 0l-4.25-4.5a.75.75 0 0 1 .02-1.06Z"
-          clipRule="evenodd"
-        />
-      </svg>
+      <ChevronDown className="pointer-events-none absolute right-2 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-slate-400 dark:text-slate-500" />
 
       {isPending && (
-        <span className="pointer-events-none absolute right-8 top-1/2 -translate-y-1/2">
-          <span className="block h-3 w-3 animate-spin rounded-full border-2 border-slate-500 border-t-transparent" />
+        <span className="pointer-events-none absolute right-6 top-1/2 -translate-y-1/2">
+          <Loader2 className="h-3 w-3 animate-spin text-blue-500" />
         </span>
       )}
 
