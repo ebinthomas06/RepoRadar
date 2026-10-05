@@ -136,49 +136,49 @@ export default async function BookmarksPage() {
 
         {/* Stats breakdown */}
         {bookmarks.length > 0 && (
-          <section className="mb-6 sm:mb-8 grid grid-cols-1 gap-3 sm:grid-cols-3 sm:gap-4">
-            <div className="rounded-2xl border border-[#D8D8D8] bg-white p-4.5 shadow-xs dark:border-[#383F4F] dark:bg-[#282E3B]/80">
-              <div className="flex items-center justify-between">
-                <p className="text-xs font-medium text-[#707A84] dark:text-[#8B999F]">Investigating</p>
-                <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-[#BA9879]/15 text-[#BA9879] dark:bg-[#1B1E28] dark:text-[#BA9879]">
-                  <Clock className="h-4 w-4" />
+          <section className="mb-4 sm:mb-8 grid grid-cols-3 gap-2 sm:gap-4">
+            <div className="rounded-xl sm:rounded-2xl border border-[#D8D8D8] bg-white p-3 sm:p-4.5 shadow-xs transition hover:shadow dark:border-[#383F4F] dark:bg-[#282E3B]/80 flex flex-col justify-between">
+              <div className="flex items-center justify-between gap-1">
+                <p className="text-[11px] sm:text-xs font-medium text-[#707A84] dark:text-[#8B999F] truncate">Investigating</p>
+                <div className="hidden xs:flex h-5 w-5 sm:h-7 sm:w-7 items-center justify-center rounded-md sm:rounded-lg bg-[#BA9879]/15 text-[#BA9879] dark:bg-[#1B1E28] dark:text-[#BA9879] shrink-0">
+                  <Clock className="h-3 w-3 sm:h-4 sm:w-4" />
                 </div>
               </div>
-              <p className="mt-2 text-2xl sm:text-3xl font-bold text-[#2E3341] dark:text-[#F0F2F2]">
+              <p className="mt-1 sm:mt-2 text-lg sm:text-2xl lg:text-3xl font-bold text-[#2E3341] dark:text-[#F0F2F2]">
                 {investigating}
               </p>
-              <p className="mt-1 text-[11px] text-[#707A84] dark:text-[#8B999F]">
+              <p className="mt-0.5 sm:mt-1 text-[10px] sm:text-[11px] text-[#707A84] dark:text-[#8B999F] truncate hidden sm:block">
                 Currently exploring codebase
               </p>
             </div>
 
-            <div className="rounded-2xl border border-[#D8D8D8] bg-white p-4.5 shadow-xs dark:border-[#383F4F] dark:bg-[#282E3B]/80">
-              <div className="flex items-center justify-between">
-                <p className="text-xs font-medium text-[#707A84] dark:text-[#8B999F]">PR in Progress</p>
-                <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-[#BA9879]/15 text-[#BA9879] dark:bg-[#1B1E28] dark:text-[#BA9879]">
-                  <GitPullRequest className="h-4 w-4" />
+            <div className="rounded-xl sm:rounded-2xl border border-[#D8D8D8] bg-white p-3 sm:p-4.5 shadow-xs transition hover:shadow dark:border-[#383F4F] dark:bg-[#282E3B]/80 flex flex-col justify-between">
+              <div className="flex items-center justify-between gap-1">
+                <p className="text-[11px] sm:text-xs font-medium text-[#707A84] dark:text-[#8B999F] truncate">In Progress</p>
+                <div className="hidden xs:flex h-5 w-5 sm:h-7 sm:w-7 items-center justify-center rounded-md sm:rounded-lg bg-[#BA9879]/15 text-[#BA9879] dark:bg-[#1B1E28] dark:text-[#BA9879] shrink-0">
+                  <GitPullRequest className="h-3 w-3 sm:h-4 sm:w-4" />
                 </div>
               </div>
-              <p className="mt-2 text-2xl sm:text-3xl font-bold text-[#2E3341] dark:text-[#F0F2F2]">
+              <p className="mt-1 sm:mt-2 text-lg sm:text-2xl lg:text-3xl font-bold text-[#2E3341] dark:text-[#F0F2F2]">
                 {prOpen}
               </p>
-              <p className="mt-1 text-[11px] text-[#707A84] dark:text-[#8B999F]">
+              <p className="mt-0.5 sm:mt-1 text-[10px] sm:text-[11px] text-[#707A84] dark:text-[#8B999F] truncate hidden sm:block">
                 Active pull requests open
               </p>
             </div>
 
-            <div className="rounded-2xl border border-[#D8D8D8] bg-white p-4.5 shadow-xs dark:border-[#383F4F] dark:bg-[#282E3B]/80">
-              <div className="flex items-center justify-between">
-                <p className="text-xs font-medium text-[#707A84] dark:text-[#8B999F]">Resolved</p>
-                <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-emerald-50 text-emerald-600 dark:bg-emerald-400/10 dark:text-emerald-300">
-                  <CheckCircle2 className="h-4 w-4" />
+            <div className="rounded-xl sm:rounded-2xl border border-[#D8D8D8] bg-white p-3 sm:p-4.5 shadow-xs transition hover:shadow dark:border-[#383F4F] dark:bg-[#282E3B]/80 flex flex-col justify-between">
+              <div className="flex items-center justify-between gap-1">
+                <p className="text-[11px] sm:text-xs font-medium text-[#707A84] dark:text-[#8B999F] truncate">Resolved</p>
+                <div className="hidden xs:flex h-5 w-5 sm:h-7 sm:w-7 items-center justify-center rounded-md sm:rounded-lg bg-emerald-50 text-emerald-600 dark:bg-emerald-400/10 dark:text-emerald-300 shrink-0">
+                  <CheckCircle2 className="h-3 w-3 sm:h-4 sm:w-4" />
                 </div>
               </div>
-              <p className="mt-2 text-2xl sm:text-3xl font-bold text-[#2E3341] dark:text-[#F0F2F2]">
+              <p className="mt-1 sm:mt-2 text-lg sm:text-2xl lg:text-3xl font-bold text-[#2E3341] dark:text-[#F0F2F2]">
                 {resolved}
               </p>
-              <p className="mt-1 text-[11px] text-[#707A84] dark:text-[#8B999F]">
-                Successfully merged & solved
+              <p className="mt-0.5 sm:mt-1 text-[10px] sm:text-[11px] text-[#707A84] dark:text-[#8B999F] truncate hidden sm:block">
+                Completed contributions
               </p>
             </div>
           </section>
