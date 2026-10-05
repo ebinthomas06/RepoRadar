@@ -201,13 +201,14 @@ export function SettingsPanel({
             onClick={() =>
               handleChange("emailAlerts", !settings.emailAlerts)
             }
-            className={`relative h-6 w-11 rounded-full transition-colors ${
+            className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-[#BA9879] focus:ring-offset-2 dark:focus:ring-offset-[#282E3B] ${
               settings.emailAlerts ? "bg-[#BA9879]" : "bg-[#D8D8D8] dark:bg-[#383F4F]"
             }`}
           >
             <span
-              className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
-                settings.emailAlerts ? "translate-x-6" : "translate-x-1"
+              aria-hidden="true"
+              className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow-md ring-0 transition duration-200 ease-in-out ${
+                settings.emailAlerts ? "translate-x-5" : "translate-x-0"
               }`}
             />
           </button>
