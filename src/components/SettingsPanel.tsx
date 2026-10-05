@@ -84,16 +84,16 @@ export function SettingsPanel({
         <div>
           <div className="mb-2 flex items-start justify-between gap-4">
             <div>
-              <label className="block text-sm font-semibold text-slate-900 dark:text-slate-100">
+              <label className="block text-sm font-semibold text-[#2E3341] dark:text-[#F0F2F2]">
                 Minimum Solvability Score
               </label>
 
-              <p className="mt-0.5 text-xs text-slate-500 dark:text-slate-400">
+              <p className="mt-0.5 text-xs text-[#707A84] dark:text-[#8B999F]">
                 Only show issues meeting this confidence threshold.
               </p>
             </div>
 
-            <span className="rounded-lg border border-blue-200 bg-blue-50 px-2.5 py-1 text-xs font-bold text-blue-700 dark:border-blue-500/20 dark:bg-blue-500/10 dark:text-blue-400">
+            <span className="rounded-lg border border-[#BA9879]/30 bg-[#BA9879]/15 px-2.5 py-1 text-xs font-bold text-[#8B6E50] dark:border-[#BA9879]/40 dark:bg-[#BA9879]/20 dark:text-[#BA9879]">
               {settings.minSolvability}
             </span>
           </div>
@@ -106,10 +106,10 @@ export function SettingsPanel({
             onChange={(e) =>
               handleChange("minSolvability", Number(e.target.value))
             }
-            className="h-2 w-full cursor-pointer appearance-none rounded-full bg-slate-200 accent-blue-600 dark:bg-slate-700 dark:accent-blue-500"
+            className="h-2 w-full cursor-pointer appearance-none rounded-full bg-[#D8D8D8] accent-[#BA9879] dark:bg-[#383F4F] dark:accent-[#BA9879]"
           />
 
-          <div className="mt-1 flex justify-between text-[11px] font-medium text-slate-400 dark:text-slate-500">
+          <div className="mt-1 flex justify-between text-[11px] font-medium text-[#8B999F]">
             <span>0</span>
             <span>50</span>
             <span>100</span>
@@ -118,11 +118,11 @@ export function SettingsPanel({
 
         {/* Repository Stars */}
         <div>
-          <label className="block text-sm font-semibold text-slate-900 dark:text-slate-100">
+          <label className="block text-sm font-semibold text-[#2E3341] dark:text-[#F0F2F2]">
             Minimum Repository Stars
           </label>
 
-          <p className="mt-0.5 text-xs text-slate-500 dark:text-slate-400">
+          <p className="mt-0.5 text-xs text-[#707A84] dark:text-[#8B999F]">
             Filter out repos below your star threshold.
           </p>
 
@@ -139,18 +139,18 @@ export function SettingsPanel({
                   Math.max(0, Number(e.target.value))
                 )
               }
-              className="h-10 w-full rounded-xl border border-slate-200 bg-slate-50 pl-9 pr-3 text-sm text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-blue-500 focus:bg-white dark:border-slate-700 dark:bg-slate-950 dark:text-slate-100 dark:placeholder:text-slate-600 dark:focus:border-blue-500"
+              className="h-10 w-full rounded-xl border border-[#D8D8D8] bg-[#F0F2F2] pl-9 pr-3 text-sm text-[#2E3341] outline-none transition placeholder:text-[#8B999F] focus:border-[#BA9879] focus:bg-white dark:border-[#383F4F] dark:bg-[#1B1E28] dark:text-[#F0F2F2] dark:placeholder:text-[#8B999F] dark:focus:border-[#BA9879]"
             />
           </div>
         </div>
 
         {/* Digest Frequency */}
         <div>
-          <label className="block text-sm font-semibold text-slate-900 dark:text-slate-100">
+          <label className="block text-sm font-semibold text-[#2E3341] dark:text-[#F0F2F2]">
             Email Digest Frequency
           </label>
 
-          <p className="mt-0.5 text-xs text-slate-500 dark:text-slate-400">
+          <p className="mt-0.5 text-xs text-[#707A84] dark:text-[#8B999F]">
             Schedule your periodic issue highlights.
           </p>
 
@@ -162,33 +162,33 @@ export function SettingsPanel({
                 e.target.value as "DAILY" | "WEEKLY" | "NEVER"
               )
             }
-            className="mt-2.5 h-10 w-full rounded-xl border border-slate-200 bg-slate-50 px-3 text-sm text-slate-900 outline-none transition focus:border-blue-500 focus:bg-white dark:border-slate-700 dark:bg-slate-950 dark:text-slate-100 dark:focus:border-blue-500"
+            className="mt-2.5 h-10 w-full rounded-xl border border-[#D8D8D8] bg-[#F0F2F2] px-3 text-sm text-[#2E3341] outline-none transition focus:border-[#BA9879] focus:bg-white dark:border-[#383F4F] dark:bg-[#1B1E28] dark:text-[#F0F2F2] dark:focus:border-[#BA9879]"
           >
-            <option value="DAILY" className="bg-white text-slate-900 dark:bg-slate-950 dark:text-slate-100">
+            <option value="DAILY" className="bg-white text-[#2E3341] dark:bg-[#1B1E28] dark:text-[#F0F2F2]">
               Daily (every morning)
             </option>
 
-            <option value="WEEKLY" className="bg-white text-slate-900 dark:bg-slate-950 dark:text-slate-100">
+            <option value="WEEKLY" className="bg-white text-[#2E3341] dark:bg-[#1B1E28] dark:text-[#F0F2F2]">
               Weekly (every Monday)
             </option>
 
-            <option value="NEVER" className="bg-white text-slate-900 dark:bg-slate-950 dark:text-slate-100">
+            <option value="NEVER" className="bg-white text-[#2E3341] dark:bg-[#1B1E28] dark:text-[#F0F2F2]">
               Never (disabled)
             </option>
           </select>
         </div>
 
         {/* Email alerts switch */}
-        <div className="flex items-center justify-between rounded-xl border border-slate-200 bg-slate-50 p-3.5 dark:border-slate-800 dark:bg-slate-950">
+        <div className="flex items-center justify-between rounded-xl border border-[#D8D8D8] bg-[#F0F2F2] p-3.5 dark:border-[#383F4F] dark:bg-[#1B1E28]">
           <div className="flex items-center gap-3">
-            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-blue-100 text-blue-600 dark:bg-slate-800 dark:text-blue-400">
+            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-[#BA9879]/15 text-[#BA9879] dark:bg-[#282E3B] dark:text-[#BA9879]">
               <Mail className="h-4 w-4" />
             </div>
             <div>
-              <p className="text-sm font-semibold text-slate-900 dark:text-slate-100">
+              <p className="text-sm font-semibold text-[#2E3341] dark:text-[#F0F2F2]">
                 Email notifications
               </p>
-              <p className="text-xs text-slate-500 dark:text-slate-400">
+              <p className="text-xs text-[#707A84] dark:text-[#8B999F]">
                 Receive inbox alerts for digests.
               </p>
             </div>
@@ -202,7 +202,7 @@ export function SettingsPanel({
               handleChange("emailAlerts", !settings.emailAlerts)
             }
             className={`relative h-6 w-11 rounded-full transition-colors ${
-              settings.emailAlerts ? "bg-blue-600" : "bg-slate-300 dark:bg-slate-700"
+              settings.emailAlerts ? "bg-[#BA9879]" : "bg-[#D8D8D8] dark:bg-[#383F4F]"
             }`}
           >
             <span
@@ -218,12 +218,12 @@ export function SettingsPanel({
           <div
             className={`flex items-center gap-2 rounded-xl border px-3.5 py-2.5 text-xs font-medium ${
               message.type === "success"
-                ? "border-emerald-200 bg-emerald-50 text-emerald-700 dark:border-emerald-500/20 dark:bg-emerald-500/10 dark:text-emerald-400"
+                ? "border-emerald-200 bg-emerald-50 text-emerald-700 dark:border-emerald-400/25 dark:bg-emerald-400/10 dark:text-emerald-300"
                 : "border-red-200 bg-red-50 text-red-700 dark:border-red-500/20 dark:bg-red-500/10 dark:text-red-400"
             }`}
           >
             {message.type === "success" ? (
-              <CheckCircle2 className="h-4 w-4 shrink-0 text-emerald-600 dark:text-emerald-400" />
+              <CheckCircle2 className="h-4 w-4 shrink-0 text-emerald-600 dark:text-emerald-300" />
             ) : (
               <AlertTriangle className="h-4 w-4 shrink-0 text-red-600 dark:text-red-400" />
             )}
@@ -232,12 +232,12 @@ export function SettingsPanel({
         )}
 
         {/* Save Button */}
-        <div className="border-t border-slate-200 pt-4 dark:border-slate-800">
+        <div className="border-t border-[#D8D8D8] pt-4 dark:border-[#383F4F]">
           <button
             type="button"
             onClick={handleSave}
             disabled={isSaving}
-            className="flex w-full items-center justify-center gap-2 rounded-xl bg-blue-600 px-4 py-2.5 text-xs sm:text-sm font-semibold text-white shadow-sm transition hover:bg-blue-500 disabled:opacity-50"
+            className="flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-[#BA9879] to-[#9D7D5E] px-4 py-2.5 text-xs sm:text-sm font-semibold text-white shadow-md shadow-[#BA9879]/20 transition hover:opacity-90 active:scale-[0.99] disabled:opacity-50"
           >
             {isSaving ? (
               <Loader2 className="h-4 w-4 animate-spin" />

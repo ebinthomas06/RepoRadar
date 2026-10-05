@@ -1,10 +1,10 @@
 import { signIn } from "@/auth";
-import { Radar, Sparkles, Bookmark, Zap, ArrowRight } from "lucide-react";
+import { Radar, ArrowRight } from "lucide-react";
 import { ThemeToggle } from "@/components/ThemeToggle";
 
 export default function LoginPage() {
   return (
-    <main className="relative flex min-h-screen items-center justify-center overflow-hidden bg-slate-50 px-5 text-slate-900 transition-colors duration-200 dark:bg-slate-950 dark:text-slate-100">
+    <main className="relative flex min-h-screen items-center justify-center overflow-hidden bg-[#F0F2F2] px-5 text-[#2E3341] transition-colors duration-200 dark:bg-[#1B1E28] dark:text-[#F0F2F2]">
       {/* Top right theme toggle */}
       <div className="absolute top-5 right-5 z-20">
         <ThemeToggle />
@@ -12,14 +12,14 @@ export default function LoginPage() {
 
       {/* Background glow effects */}
       <div className="pointer-events-none absolute inset-0 overflow-hidden opacity-50 dark:opacity-100">
-        <div className="absolute left-1/2 top-[-250px] h-[500px] w-[500px] -translate-x-1/2 rounded-full bg-blue-500/15 dark:bg-blue-600/10 blur-3xl" />
-        <div className="absolute bottom-[-200px] left-[-100px] h-[400px] w-[400px] rounded-full bg-indigo-500/15 dark:bg-indigo-600/10 blur-3xl" />
-        <div className="absolute right-[-150px] top-1/3 h-[400px] w-[400px] rounded-full bg-purple-500/15 dark:bg-purple-600/10 blur-3xl" />
+        <div className="absolute left-1/2 top-[-250px] h-[500px] w-[500px] -translate-x-1/2 rounded-full bg-[#BA9879]/15 dark:bg-[#BA9879]/10 blur-3xl" />
+        <div className="absolute bottom-[-200px] left-[-100px] h-[400px] w-[400px] rounded-full bg-[#C0C6C9]/30 dark:bg-[#282E3B]/30 blur-3xl" />
+        <div className="absolute right-[-150px] top-1/3 h-[400px] w-[400px] rounded-full bg-[#BA9879]/10 dark:bg-[#282E3B]/20 blur-3xl" />
       </div>
 
       {/* Subtle grid background */}
       <div
-        className="pointer-events-none absolute inset-0 opacity-[0.03] dark:opacity-[0.025]"
+        className="pointer-events-none absolute inset-0 opacity-[0.04] dark:opacity-[0.03]"
         style={{
           backgroundImage:
             "linear-gradient(currentColor 1px, transparent 1px), linear-gradient(90deg, currentColor 1px, transparent 1px)",
@@ -27,23 +27,23 @@ export default function LoginPage() {
         }}
       />
 
-      {/* Login Card (Always crisp white inner box in both light and dark modes) */}
+      {/* Login Card */}
       <div className="relative w-full max-w-md">
-        <div className="rounded-3xl border border-slate-200/90 bg-white p-8 shadow-2xl shadow-slate-950/20 text-slate-900 sm:p-10">
+        <div className="rounded-3xl border border-[#D8D8D8] bg-[#E6E9E9] p-8 shadow-2xl shadow-black/10 text-[#2E3341] sm:p-10 dark:border-[#383F4F] dark:bg-[#282E3B] dark:text-[#F0F2F2]">
           {/* Logo */}
           <div className="flex justify-center">
-            <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-blue-600 to-indigo-600 font-bold text-white shadow-xl shadow-blue-500/25">
+            <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-[#BA9879] to-[#9D7D5E] font-bold text-white shadow-xl shadow-[#BA9879]/30">
               <Radar className="h-7 w-7 animate-pulse" />
             </div>
           </div>
 
           {/* Heading */}
           <div className="mt-6 text-center">
-            <h1 className="text-2xl font-bold tracking-tight text-slate-900 sm:text-3xl">
+            <h1 className="text-2xl font-bold tracking-tight text-[#2E3341] sm:text-3xl dark:text-[#F0F2F2]">
               Welcome to RepoRadar
             </h1>
 
-            <p className="mx-auto mt-2.5 max-w-sm text-xs sm:text-sm leading-6 text-slate-500">
+            <p className="mx-auto mt-2.5 max-w-sm text-xs sm:text-sm leading-6 text-[#707A84] dark:text-[#8B999F]">
               Discover open-source issues matched to your skills, track contributions, and supercharge your GitHub journey.
             </p>
           </div>
@@ -60,7 +60,7 @@ export default function LoginPage() {
           >
             <button
               type="submit"
-              className="group flex w-full items-center justify-center gap-3 rounded-2xl border border-slate-900 bg-slate-900 px-5 py-3.5 text-sm font-semibold text-white shadow-lg shadow-slate-900/15 transition-all duration-200 hover:bg-slate-800 hover:shadow-xl active:scale-[0.99]"
+              className="group flex w-full items-center justify-center gap-3 rounded-2xl border border-[#2E3341] bg-[#2E3341] px-5 py-3.5 text-sm font-semibold text-white shadow-lg shadow-[#2E3341]/20 transition-all duration-200 hover:bg-[#3E4454] hover:shadow-xl active:scale-[0.99] dark:border-[#BA9879] dark:bg-[#BA9879] dark:text-[#2E3341] dark:hover:bg-[#CDB093]"
             >
               {/* GitHub SVG Icon */}
               <svg
@@ -79,43 +79,16 @@ export default function LoginPage() {
           </form>
 
           {/* Footer note */}
-          <p className="mt-6 text-center text-xs leading-5 text-slate-500">
+          <p className="mt-6 text-center text-xs leading-5 text-[#707A84] dark:text-[#8B999F]">
             Secure authentication via GitHub OAuth. No extra passwords needed.
           </p>
         </div>
 
         {/* Brand footer */}
-        <p className="mt-5 text-center text-xs font-medium text-slate-500 dark:text-slate-400">
+        <p className="mt-5 text-center text-xs font-medium text-[#707A84] dark:text-[#8B999F]">
           RepoRadar · Discover · Contribute · Build
         </p>
       </div>
     </main>
-  );
-}
-
-function Feature({
-  icon,
-  title,
-  description,
-}: {
-  icon: React.ReactNode;
-  title: string;
-  description: string;
-}) {
-  return (
-    <div className="flex items-center gap-3 rounded-2xl border border-slate-200/80 bg-slate-50/70 px-3.5 py-3">
-      <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-white shadow-xs border border-slate-100">
-        {icon}
-      </div>
-
-      <div className="min-w-0">
-        <p className="text-xs font-semibold text-slate-800">
-          {title}
-        </p>
-        <p className="mt-0.5 text-[11px] text-slate-500 leading-tight">
-          {description}
-        </p>
-      </div>
-    </div>
   );
 }

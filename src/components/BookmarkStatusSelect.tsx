@@ -62,31 +62,31 @@ export function BookmarkStatusSelect({
         }}
         className={`
           h-8.5 appearance-none rounded-xl border
-          border-slate-200 bg-white
+          border-[#D8D8D8] bg-white
           pl-3 pr-7.5 text-xs font-medium
-          text-slate-700 outline-none
+          text-[#2E3341] outline-none
           transition
-          hover:border-slate-300
-          focus:border-blue-500/60
-          focus:ring-2 focus:ring-blue-500/10
-          dark:border-slate-700 dark:bg-slate-900 dark:text-slate-300
-          dark:hover:border-slate-600
+          hover:border-[#BA9879]/60
+          focus:border-[#BA9879]
+          focus:ring-2 focus:ring-[#BA9879]/15
+          dark:border-[#383F4F] dark:bg-[#1B1E28] dark:text-[#F0F2F2]
+          dark:hover:border-[#BA9879]/60
           disabled:cursor-wait disabled:opacity-50
         `}
       >
         {STATUSES.map((status) => (
-          <option key={status.value} value={status.value} className="bg-white text-slate-800 dark:bg-slate-900 dark:text-slate-200">
+          <option key={status.value} value={status.value} className="bg-white text-[#2E3341] dark:bg-[#1B1E28] dark:text-[#F0F2F2]">
             {status.label}
           </option>
         ))}
       </select>
 
       {/* Dropdown arrow */}
-      <ChevronDown className="pointer-events-none absolute right-2 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-slate-400 dark:text-slate-500" />
+      <ChevronDown className="pointer-events-none absolute right-2 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-[#8B999F]" />
 
       {isPending && (
         <span className="pointer-events-none absolute right-6 top-1/2 -translate-y-1/2">
-          <Loader2 className="h-3 w-3 animate-spin text-blue-500" />
+          <Loader2 className="h-3 w-3 animate-spin text-[#BA9879]" />
         </span>
       )}
 

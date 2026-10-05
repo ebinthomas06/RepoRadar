@@ -8,28 +8,28 @@ function getScoreBadge(score: number) {
   const rounded = Math.round(score);
   if (rounded >= 70) {
     return {
-      text: "text-emerald-700 dark:text-emerald-400",
-      bg: "bg-emerald-50 border-emerald-200 dark:bg-emerald-500/10 dark:border-emerald-500/20",
+      text: "text-emerald-600 dark:text-emerald-300",
+      bg: "bg-emerald-50/80 border-emerald-200/80 dark:bg-emerald-400/10 dark:border-emerald-400/25",
       label: "High Match",
     };
   }
   if (rounded >= 45) {
     return {
-      text: "text-blue-700 dark:text-blue-400",
-      bg: "bg-blue-50 border-blue-200 dark:bg-blue-500/10 dark:border-blue-500/20",
+      text: "text-[#8B6E50] dark:text-[#BA9879]",
+      bg: "bg-[#BA9879]/15 border-[#BA9879]/30 dark:bg-[#BA9879]/15 dark:border-[#BA9879]/30",
       label: "Good Match",
     };
   }
   if (rounded >= 25) {
     return {
-      text: "text-amber-700 dark:text-amber-400",
-      bg: "bg-amber-50 border-amber-200 dark:bg-amber-500/10 dark:border-amber-500/20",
+      text: "text-amber-600 dark:text-amber-300",
+      bg: "bg-amber-50/80 border-amber-200/80 dark:bg-amber-400/10 dark:border-amber-400/25",
       label: "Moderate",
     };
   }
   return {
-    text: "text-slate-600 dark:text-slate-400",
-    bg: "bg-slate-100 border-slate-200 dark:bg-slate-800 dark:border-slate-700",
+    text: "text-[#707A84] dark:text-[#8B999F]",
+    bg: "bg-[#E6E9E9] border-[#D8D8D8] dark:bg-[#1B1E28] dark:border-[#383F4F]",
     label: "Explore",
   };
 }
@@ -40,21 +40,21 @@ export function IssueCard({ issue }: { issue: IssueWithRepo }) {
   const badge = getScoreBadge(score);
 
   return (
-    <article className="group rounded-2xl border border-slate-200 bg-white p-4.5 transition-all duration-200 hover:border-blue-400/50 hover:shadow-md dark:border-slate-800 dark:bg-slate-900/60 dark:hover:border-slate-700 dark:hover:bg-slate-900/80 dark:hover:shadow-xl dark:hover:shadow-black/20">
+    <article className="group rounded-2xl border border-[#D8D8D8] bg-white p-4.5 transition-all duration-200 hover:border-[#BA9879]/50 hover:shadow-md dark:border-[#383F4F] dark:bg-[#282E3B]/90 dark:hover:border-[#BA9879]/50 dark:hover:bg-[#282E3B] dark:hover:shadow-xl dark:hover:shadow-black/20">
       <div className="flex flex-col gap-3.5">
         {/* Top: Repo details & Bookmark action */}
         <div className="flex items-start justify-between gap-3">
           <div className="min-w-0 flex-1">
             {/* Repo info & Stars */}
             <div className="mb-2 flex flex-wrap items-center gap-2 text-xs">
-              <span className="flex items-center gap-1.5 font-medium text-slate-600 dark:text-slate-400">
-                <GitBranch className="h-3.5 w-3.5 text-slate-400 dark:text-slate-500 shrink-0" />
+              <span className="flex items-center gap-1.5 font-medium text-[#707A84] dark:text-[#8B999F]">
+                <GitBranch className="h-3.5 w-3.5 text-[#8B999F] shrink-0" />
                 <span className="truncate max-w-[200px] sm:max-w-none">{issue.repository.fullName}</span>
               </span>
 
-              <span className="text-slate-300 dark:text-slate-700">•</span>
+              <span className="text-[#C0C6C9] dark:text-[#383F4F]">•</span>
 
-              <span className="flex items-center gap-1 text-slate-500 dark:text-slate-400 font-medium">
+              <span className="flex items-center gap-1 text-[#707A84] dark:text-[#8B999F] font-medium">
                 <Star className="h-3.5 w-3.5 text-amber-500 fill-amber-500/30 shrink-0" />
                 {issue.repository.starsCount.toLocaleString()}
               </span>
@@ -65,10 +65,10 @@ export function IssueCard({ issue }: { issue: IssueWithRepo }) {
               href={issue.htmlUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-1.5 text-sm sm:text-base font-semibold leading-snug text-slate-900 transition-colors group-hover:text-blue-600 dark:text-slate-100 dark:group-hover:text-blue-400"
+              className="inline-flex items-center gap-1.5 text-sm sm:text-base font-semibold leading-snug text-[#2E3341] transition-colors group-hover:text-[#BA9879] dark:text-[#F0F2F2] dark:group-hover:text-[#BA9879]"
             >
               <span className="line-clamp-2">{issue.title}</span>
-              <ExternalLink className="h-3.5 w-3.5 shrink-0 opacity-0 transition-opacity group-hover:opacity-100 text-slate-400 dark:text-slate-500" />
+              <ExternalLink className="h-3.5 w-3.5 shrink-0 opacity-0 transition-opacity group-hover:opacity-100 text-[#8B999F]" />
             </a>
           </div>
 
@@ -92,13 +92,13 @@ export function IssueCard({ issue }: { issue: IssueWithRepo }) {
             {issue.labels.slice(0, 6).map((label) => (
               <span
                 key={label}
-                className="rounded-md border border-slate-200 bg-slate-50 px-2 py-0.5 text-[11px] font-medium text-slate-600 transition dark:border-slate-700/80 dark:bg-slate-800/70 dark:text-slate-300"
+                className="rounded-md border border-[#D8D8D8] bg-[#F0F2F2] px-2 py-0.5 text-[11px] font-medium text-[#616B76] transition dark:border-[#383F4F] dark:bg-[#1B1E28]/70 dark:text-[#8B999F]"
               >
                 {label}
               </span>
             ))}
             {issue.labels.length > 6 && (
-              <span className="rounded-md border border-transparent px-1.5 py-0.5 text-[11px] font-medium text-slate-400">
+              <span className="rounded-md border border-transparent px-1.5 py-0.5 text-[11px] font-medium text-[#8B999F]">
                 +{issue.labels.length - 6} more
               </span>
             )}

@@ -17,13 +17,13 @@ export function ThemeToggle({ className = "" }: { className?: string }) {
   if (!mounted) {
     return (
       <div
-        className={`flex h-9 w-24 items-center justify-center rounded-xl border border-slate-200 bg-slate-100 dark:border-slate-800 dark:bg-slate-900 ${className}`}
+        className={`flex h-9 w-24 items-center justify-center rounded-xl border border-[#D8D8D8] bg-[#E6E9E9] dark:border-[#383F4F] dark:bg-[#1B1E28] ${className}`}
       />
     );
   }
 
   return (
-    <div className={`flex items-center rounded-xl border border-slate-200 bg-slate-100 p-1 dark:border-slate-800 dark:bg-slate-900 ${className}`}>
+    <div className={`flex items-center rounded-xl border border-[#D8D8D8] bg-[#E6E9E9] p-1 dark:border-[#383F4F] dark:bg-[#1B1E28] ${className}`}>
       <button
         type="button"
         onClick={() => setTheme("light")}
@@ -31,8 +31,8 @@ export function ThemeToggle({ className = "" }: { className?: string }) {
         title="Light theme"
         className={`flex h-7 w-7 items-center justify-center rounded-lg text-xs font-medium transition-all ${
           theme === "light"
-            ? "bg-white text-blue-600 shadow-sm dark:bg-slate-800 dark:text-blue-400"
-            : "text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-100"
+            ? "bg-white text-[#2E3341] shadow-xs dark:bg-[#282E3B] dark:text-[#BA9879]"
+            : "text-[#707A84] hover:text-[#2E3341] dark:text-[#8B999F] dark:hover:text-[#F0F2F2]"
         }`}
       >
         <Sun className="h-4 w-4" />
@@ -45,8 +45,8 @@ export function ThemeToggle({ className = "" }: { className?: string }) {
         title="Dark theme"
         className={`flex h-7 w-7 items-center justify-center rounded-lg text-xs font-medium transition-all ${
           theme === "dark"
-            ? "bg-white text-blue-600 shadow-sm dark:bg-slate-800 dark:text-blue-400"
-            : "text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-100"
+            ? "bg-white text-[#2E3341] shadow-xs dark:bg-[#282E3B] dark:text-[#BA9879]"
+            : "text-[#707A84] hover:text-[#2E3341] dark:text-[#8B999F] dark:hover:text-[#F0F2F2]"
         }`}
       >
         <Moon className="h-4 w-4" />
@@ -59,8 +59,8 @@ export function ThemeToggle({ className = "" }: { className?: string }) {
         title="System theme"
         className={`flex h-7 w-7 items-center justify-center rounded-lg text-xs font-medium transition-all ${
           theme === "system"
-            ? "bg-white text-blue-600 shadow-sm dark:bg-slate-800 dark:text-blue-400"
-            : "text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-100"
+            ? "bg-white text-[#2E3341] shadow-xs dark:bg-[#282E3B] dark:text-[#BA9879]"
+            : "text-[#707A84] hover:text-[#2E3341] dark:text-[#8B999F] dark:hover:text-[#F0F2F2]"
         }`}
       >
         <Monitor className="h-4 w-4" />
