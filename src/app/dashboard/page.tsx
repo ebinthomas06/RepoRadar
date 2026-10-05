@@ -11,7 +11,6 @@ import {
   Inbox,
   Tags,
   Mail,
-  Flame,
   Bookmark,
   Sliders,
 } from "lucide-react";
@@ -137,28 +136,28 @@ export default async function DashboardPage() {
           </div>
         </section>
 
-        {/* Stats Grid - Single row on all screen sizes */}
-        <section className="mb-4 sm:mb-8 grid grid-cols-3 gap-2 sm:gap-4">
+        {/* Stats Grid - Single row on all screen sizes with equal sizing & vertical alignment */}
+        <section className="mb-4 sm:mb-8 grid grid-cols-3 gap-2 sm:gap-4 items-stretch">
           {/* Card 1: Issues */}
-          <div className="rounded-xl sm:rounded-2xl border border-[#D8D8D8] bg-white p-3 sm:p-4.5 shadow-xs transition hover:shadow dark:border-[#383F4F] dark:bg-[#282E3B]/80 flex flex-col justify-between">
+          <div className="rounded-xl sm:rounded-2xl border border-[#D8D8D8] bg-white p-3 sm:p-4.5 shadow-xs transition hover:shadow dark:border-[#383F4F] dark:bg-[#282E3B]/80 flex flex-col justify-between h-full">
             <div className="flex items-center justify-between gap-1">
               <p className="text-[11px] sm:text-xs font-medium text-[#707A84] dark:text-[#8B999F] truncate">Issues</p>
               <div className="hidden xs:flex h-5 w-5 sm:h-7 sm:w-7 items-center justify-center rounded-md sm:rounded-lg bg-[#BA9879]/15 text-[#BA9879] dark:bg-[#1B1E28] dark:text-[#BA9879] shrink-0">
                 <Inbox className="h-3 w-3 sm:h-4 sm:w-4" />
               </div>
             </div>
-            <p className="mt-1 sm:mt-2 text-lg sm:text-2xl lg:text-3xl font-bold text-[#2E3341] dark:text-[#F0F2F2]">
+            <p className="mt-1 sm:mt-2 text-base sm:text-2xl lg:text-3xl font-bold text-[#2E3341] dark:text-[#F0F2F2]">
               {issues?.length ?? 0}
             </p>
-            <p className="mt-0.5 sm:mt-1 text-[10px] sm:text-[11px] text-[#707A84] dark:text-[#8B999F] truncate hidden sm:block">
-              Ranked by match
+            <p className="mt-0.5 sm:mt-1 text-[10px] sm:text-[11px] text-[#707A84] dark:text-[#8B999F] font-medium truncate">
+              Ranked
             </p>
           </div>
 
           {/* Card 2: Interests */}
           <Link
             href="/settings"
-            className="group rounded-xl sm:rounded-2xl border border-[#D8D8D8] bg-white p-3 sm:p-4.5 shadow-xs transition hover:border-[#BA9879]/50 hover:shadow dark:border-[#383F4F] dark:bg-[#282E3B]/80 dark:hover:border-[#BA9879]/50 flex flex-col justify-between"
+            className="group rounded-xl sm:rounded-2xl border border-[#D8D8D8] bg-white p-3 sm:p-4.5 shadow-xs transition hover:border-[#BA9879]/50 hover:shadow dark:border-[#383F4F] dark:bg-[#282E3B]/80 dark:hover:border-[#BA9879]/50 flex flex-col justify-between h-full"
           >
             <div className="flex items-center justify-between gap-1">
               <p className="text-[11px] sm:text-xs font-medium text-[#707A84] dark:text-[#8B999F] truncate">Interests</p>
@@ -166,7 +165,7 @@ export default async function DashboardPage() {
                 <Tags className="h-3 w-3 sm:h-4 sm:w-4" />
               </div>
             </div>
-            <p className="mt-1 sm:mt-2 text-lg sm:text-2xl lg:text-3xl font-bold text-[#2E3341] group-hover:text-[#BA9879] dark:text-[#F0F2F2] dark:group-hover:text-[#BA9879] transition-colors">
+            <p className="mt-1 sm:mt-2 text-base sm:text-2xl lg:text-3xl font-bold text-[#2E3341] group-hover:text-[#BA9879] dark:text-[#F0F2F2] dark:group-hover:text-[#BA9879] transition-colors">
               {tags.length}
             </p>
             <p className="mt-0.5 sm:mt-1 text-[10px] sm:text-[11px] text-[#8B6E50] dark:text-[#BA9879] font-medium truncate">
@@ -177,7 +176,7 @@ export default async function DashboardPage() {
           {/* Card 3: Digest */}
           <Link
             href="/settings"
-            className="group rounded-xl sm:rounded-2xl border border-[#D8D8D8] bg-white p-3 sm:p-4.5 shadow-xs transition hover:border-[#BA9879]/50 hover:shadow dark:border-[#383F4F] dark:bg-[#282E3B]/80 dark:hover:border-[#BA9879]/50 flex flex-col justify-between"
+            className="group rounded-xl sm:rounded-2xl border border-[#D8D8D8] bg-white p-3 sm:p-4.5 shadow-xs transition hover:border-[#BA9879]/50 hover:shadow dark:border-[#383F4F] dark:bg-[#282E3B]/80 dark:hover:border-[#BA9879]/50 flex flex-col justify-between h-full"
           >
             <div className="flex items-center justify-between gap-1">
               <p className="text-[11px] sm:text-xs font-medium text-[#707A84] dark:text-[#8B999F] truncate">Digest</p>
@@ -185,7 +184,7 @@ export default async function DashboardPage() {
                 <Mail className="h-3 w-3 sm:h-4 sm:w-4" />
               </div>
             </div>
-            <p className="mt-1 sm:mt-2 text-xs sm:text-lg lg:text-xl font-bold text-[#2E3341] group-hover:text-[#BA9879] dark:text-[#F0F2F2] dark:group-hover:text-[#BA9879] transition-colors truncate">
+            <p className="mt-1 sm:mt-2 text-base sm:text-2xl lg:text-3xl font-bold text-[#2E3341] group-hover:text-[#BA9879] dark:text-[#F0F2F2] dark:group-hover:text-[#BA9879] transition-colors truncate">
               {preferences?.digestFreq === "NEVER"
                 ? "Disabled"
                 : preferences?.digestFreq === "WEEKLY"
@@ -202,8 +201,7 @@ export default async function DashboardPage() {
         <section className="min-w-0">
           <div className="mb-4 flex flex-wrap items-center justify-between gap-2">
             <div>
-              <div className="flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wider text-[#8B6E50] dark:text-[#BA9879]">
-                <Flame className="h-3.5 w-3.5" />
+              <div className="text-xs font-semibold uppercase tracking-wider text-[#8B6E50] dark:text-[#BA9879]">
                 <span>Personalized</span>
               </div>
               <h2 className="mt-0.5 text-xl sm:text-2xl font-bold tracking-tight text-[#2E3341] dark:text-[#F0F2F2]">
