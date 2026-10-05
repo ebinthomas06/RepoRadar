@@ -107,7 +107,6 @@ export default async function DashboardPage() {
                   <span className="text-xs font-semibold uppercase tracking-wider text-blue-600 dark:text-blue-400">
                     Welcome back
                   </span>
-                  <Sparkles className="h-3.5 w-3.5 text-blue-500" />
                 </div>
 
                 <h2 className="mt-0.5 text-xl font-bold tracking-tight text-slate-900 sm:text-2xl lg:text-3xl dark:text-white">

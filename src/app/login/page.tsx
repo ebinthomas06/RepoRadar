@@ -78,36 +78,6 @@ export default function LoginPage() {
             </button>
           </form>
 
-          {/* Divider */}
-          <div className="my-6 flex items-center gap-3">
-            <div className="h-px flex-1 bg-slate-200" />
-            <span className="text-[10px] font-semibold uppercase tracking-wider text-slate-400">
-              Personalized Discovery
-            </span>
-            <div className="h-px flex-1 bg-slate-200" />
-          </div>
-
-          {/* Feature Highlights with Vector Icons */}
-          <div className="space-y-2.5">
-            <Feature
-              icon={<Sparkles className="h-4 w-4 text-blue-600" />}
-              title="Personalized Feed"
-              description="Surface open-source issues matched to your preferred topics."
-            />
-
-            <Feature
-              icon={<Bookmark className="h-4 w-4 text-indigo-600" />}
-              title="Issue Tracker"
-              description="Bookmark interesting problems and manage PR status."
-            />
-
-            <Feature
-              icon={<Zap className="h-4 w-4 text-amber-600" />}
-              title="Smart Solvability Scoring"
-              description="Discover high-signal beginner to advanced issues instantly."
-            />
-          </div>
-
           {/* Footer note */}
           <p className="mt-6 text-center text-xs leading-5 text-slate-500">
             Secure authentication via GitHub OAuth. No extra passwords needed.
