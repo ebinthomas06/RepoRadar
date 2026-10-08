@@ -68,26 +68,27 @@ jobs:
                 ;;
             esac
           else
-            # Auto schedule: daily at 2 AM = ingest + score, Monday at 9 AM = digest
-            DAY_OF_WEEK=$(date -u +%u)  # 1=Monday, 7=Sunday
-            HOUR=$(date -u +%H)
-            
-            # Daily ingestion + scoring
-            if [ "$HOUR" = "02" ]; then
-              echo "run-ingest=true" >> $GITHUB_OUTPUT
-              echo "run-score=true" >> $GITHUB_OUTPUT
-              echo "run-digest=false" >> $GITHUB_OUTPUT
-            # Weekly digest (Monday 9 AM)
-            elif [ "$DAY_OF_WEEK" = "1" ] && [ "$HOUR" = "09" ]; then
-              echo "run-ingest=false" >> $GITHUB_OUTPUT
-              echo "run-score=false" >> $GITHUB_OUTPUT
-              echo "run-digest=true" >> $GITHUB_OUTPUT
-              echo "digest-freq=weekly" >> $GITHUB_OUTPUT
-            else
-              echo "run-ingest=false" >> $GITHUB_OUTPUT
-              echo "run-score=false" >> $GITHUB_OUTPUT
-              echo "run-digest=false" >> $GITHUB_OUTPUT
-            fi
+            # Auto schedule: determine tasks based on github.event.schedule
+            SCHEDULE="${{ github.event.schedule }}"
+            case "$SCHEDULE" in
+              "0 2 * * *")
+                echo "run-ingest=true" >> $GITHUB_OUTPUT
+                echo "run-score=true" >> $GITHUB_OUTPUT
+                echo "run-digest=false" >> $GITHUB_OUTPUT
+                ;;
+              "0 9 * * 1")
+                echo "run-ingest=false" >> $GITHUB_OUTPUT
+                echo "run-score=false" >> $GITHUB_OUTPUT
+                echo "run-digest=true" >> $GITHUB_OUTPUT
+                echo "digest-freq=weekly" >> $GITHUB_OUTPUT
+                ;;
+              *)
+                echo "Unknown schedule: $SCHEDULE"
+                echo "run-ingest=false" >> $GITHUB_OUTPUT
+                echo "run-score=false" >> $GITHUB_OUTPUT
+                echo "run-digest=false" >> $GITHUB_OUTPUT
+                ;;
+            esac
           fi
 
   ingest-issues:
@@ -101,7 +102,7 @@ jobs:
 
       - uses: actions/setup-node@v4
         with:
-          node-version: "22"
+          node-version: "24"
           cache: "npm"
 
       - name: Install dependencies
@@ -130,14 +131,18 @@ jobs:
     name: Score Issues by Solvability
     runs-on: ubuntu-latest
     needs: [schedule-check, ingest-issues]
-    if: needs.schedule-check.outputs.run-score == 'true'
+    if: |
+      always() &&
+      needs.schedule-check.result == 'success' &&
+      needs.schedule-check.outputs.run-score == 'true' &&
+      (needs.ingest-issues.result == 'success' || needs.ingest-issues.result == 'skipped')
     timeout-minutes: 15
     steps:
       - uses: actions/checkout@v4
 
       - uses: actions/setup-node@v4
         with:
-          node-version: "22"
+          node-version: "24"
           cache: "npm"
 
       - name: Install dependencies
@@ -173,7 +178,7 @@ jobs:
 
       - uses: actions/setup-node@v4
         with:
-          node-version: "22"
+          node-version: "24"
           cache: "npm"
 
       - name: Install dependencies
@@ -215,7 +220,28 @@ jobs:
     steps:
       - name: Check job statuses
         run: |
-          echo "✅ Pipeline run completed at $(date -u)"
-          echo "Ingest: ${{ needs.ingest-issues.result }}"
-          echo "Score: ${{ needs.score-issues.result }}"
-          echo "Digest: ${{ needs.send-digest.result }}"
+          echo "Pipeline run completed at $(date -u)"
+          echo "Ingest status: ${{ needs.ingest-issues.result }}"
+          echo "Score status:  ${{ needs.score-issues.result }}"
+          echo "Digest status: ${{ needs.send-digest.result }}"
+
+          INGEST_RES="${{ needs.ingest-issues.result }}"
+          SCORE_RES="${{ needs.score-issues.result }}"
+          DIGEST_RES="${{ needs.send-digest.result }}"
+
+          if [ "$INGEST_RES" = "failure" ] || [ "$SCORE_RES" = "failure" ] || [ "$DIGEST_RES" = "failure" ]; then
+            echo "❌ One or more pipeline tasks failed!"
+            exit 1
+          fi
+
+          if [ "$INGEST_RES" = "cancelled" ] || [ "$SCORE_RES" = "cancelled" ] || [ "$DIGEST_RES" = "cancelled" ]; then
+            echo "❌ One or more pipeline tasks were cancelled!"
+            exit 1
+          fi
+
+          if [ "$INGEST_RES" = "skipped" ] && [ "$SCORE_RES" = "skipped" ] && [ "$DIGEST_RES" = "skipped" ]; then
+            echo "❌ All worker tasks were skipped! No work was executed."
+            exit 1
+          fi
+
+          echo "✅ Pipeline executed successfully!"
